@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LifeOS">
+<meta name="theme-color" content="#0f0f13">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>LifeOS</title>
+<style>
+:root{
+  --bg:#0f0f13;--s1:#1a1a22;--s2:#22222e;
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --tx:#f0f0f5;--mu:#7878a0;
+  --ac:#7c7ff5;--ac2:rgba(124,127,245,.14);
+  --gr:#22c55e;--gr2:rgba(34,197,94,.14);
+  --am:#f59e0b;--am2:rgba(245,158,11,.14);
+  --rd:#ef4444;--rd2:rgba(239,68,68,.14);
+  --ra:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior:none;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;}
+
+/* ── SCREENS ── */
+#login-screen,#loading-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:500;}
+#loading-screen{display:none;}
+.login-card{text-align:center;padding:40px 28px;max-width:340px;width:90%;}
+.login-logo{font-size:56px;margin-bottom:14px;}
+.login-title{font-size:28px;font-weight:600;letter-spacing:-1px;margin-bottom:6px;}
+.login-sub{font-size:14px;color:var(--mu);margin-bottom:32px;line-height:1.5;}
+.btn-google{display:flex;align-items:center;gap:10px;width:100%;padding:13px 18px;background:var(--s1);border:1px solid var(--b2);border-radius:var(--ra);color:var(--tx);font-size:15px;font-weight:500;cursor:pointer;justify-content:center;transition:background .15s;}
+.btn-google:active{background:var(--s2);}
+.btn-google svg{width:20px;height:20px;flex-shrink:0;}
+.login-note{font-size:12px;color:var(--mu);margin-top:20px;line-height:1.5;}
+.loader{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--ac);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── APP ── */
+#app{display:none;}
+.page{display:none;padding-bottom:80px;min-height:100vh;}
+.page.active{display:block;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0);}
+.nb{flex:1;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--mu);font-size:10px;font-weight:500;cursor:pointer;transition:color .18s;}
+.nb.on{color:var(--ac);}
+.nb svg{width:22px;height:22px;stroke-width:1.5;}
+
+/* ── HEADER ── */
+.ph{padding:20px 16px 14px;position:sticky;top:0;background:var(--bg);z-index:20;border-bottom:1px solid var(--b1);}
+.ph-row{display:flex;justify-content:space-between;align-items:center;}
+.pt{font-size:22px;font-weight:600;letter-spacing:-.5px;}
+.ps{font-size:13px;color:var(--mu);margin-top:2px;}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--ra);padding:14px 16px;margin:0 12px 10px;}
+.sec{padding:14px 16px 6px;}
+.sl{font-size:11px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;}
+
+/* ── CLOCK ── */
+.cw{padding:20px 16px 0;}
+.ck{font-size:52px;font-weight:300;letter-spacing:-3px;line-height:1;}
+.dl{font-size:13px;color:var(--mu);margin-top:5px;}
+.gr{font-size:18px;font-weight:500;margin-top:10px;}
+
+/* ── NEXT BANNER ── */
+.nb-card{background:var(--ac2);border:1px solid rgba(124,127,245,.3);border-radius:var(--ra);padding:14px 16px;margin:14px 12px 4px;}
+.nbl{font-size:10px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.1em;}
+.nbt{font-size:26px;font-weight:600;margin:3px 0 1px;}
+.nbx{font-size:14px;color:var(--mu);}
+
+/* ── TIMELINE ── */
+.tlw{padding:0 12px;}
+.tli{display:flex;gap:10px;padding:7px 0;}
+.tlt{font-size:12px;color:var(--mu);min-width:60px;padding-top:2px;font-variant-numeric:tabular-nums;}
+.tls{display:flex;flex-direction:column;align-items:center;padding-top:3px;}
+.tld{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.tlln{flex:1;width:1px;background:var(--b1);min-height:20px;margin-top:3px;}
+.tlb{flex:1;padding-bottom:4px;}
+.tltl{font-size:14px;font-weight:500;line-height:1.3;}
+.tldt{font-size:12px;color:var(--mu);margin-top:2px;line-height:1.4;}
+.tldel{background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;padding:0 2px;align-self:flex-start;line-height:1;}
+
+/* ── CAT COLORS ── */
+.cf{background:#f59e0b;}.cw2{background:#8b5cf6;}.cc{background:#3b82f6;}
+.cs{background:#10b981;}.csl{background:#6366f1;}.co{background:#f97316;}
+.cr{background:#6b7280;}.cwa{background:#0ea5e9;}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px;}
+.sb{background:var(--s1);border:1px solid var(--b1);border-radius:var(--ra);padding:12px;}
+.sbl{font-size:11px;color:var(--mu);margin-bottom:4px;}
+.sbv{font-size:20px;font-weight:600;}
+
+/* ── WATER ── */
+.wrow{display:flex;gap:7px;flex-wrap:wrap;padding:6px 0 4px;}
+.wg{font-size:22px;cursor:pointer;opacity:.2;transition:opacity .15s,transform .1s;user-select:none;}
+.wg.on{opacity:1;}
+.wg:active{transform:scale(1.3);}
+
+/* ── QUOTE ── */
+.qt{border-left:3px solid var(--ac);padding:10px 14px;margin:0 12px 16px;}
+.qt p{font-size:13px;color:var(--mu);font-style:italic;line-height:1.6;}
+
+/* ── SUBTABS ── */
+.stabs{display:flex;gap:5px;padding:8px 12px 4px;overflow-x:auto;scrollbar-width:none;}
+.stabs::-webkit-scrollbar{display:none;}
+.stab{padding:6px 15px;border-radius:99px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:var(--s2);color:var(--mu);white-space:nowrap;transition:all .15s;}
+.stab.on{background:var(--ac2);color:var(--ac);}
+.sp{display:none;}
+.sp.on{display:block;}
+
+/* ── MONEY ── */
+.dc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--ra);padding:14px 16px;margin-bottom:8px;}
+.dn{font-size:15px;font-weight:600;}
+.dr{font-size:20px;font-weight:700;color:var(--rd);}
+.dm{font-size:12px;color:var(--mu);}
+.pt{background:var(--s2);border-radius:99px;height:5px;overflow:hidden;margin:8px 0;}
+.pf{height:100%;border-radius:99px;transition:width .5s;}
+.li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--b1);}
+.li:last-child{border-bottom:none;}
+.sbn{width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+
+/* ── GOALS ── */
+.pc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--ra);padding:14px 16px;margin-bottom:10px;}
+.pbadge{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:500;}
+.bcu{background:var(--ac2);color:var(--ac);}
+.bcd{background:var(--gr2);color:var(--gr);}
+.bcf{background:var(--s2);color:var(--mu);}
+.tr{display:flex;align-items:center;gap:9px;padding:6px 0;}
+.tc{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--mu);background:none;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;}
+.tc.on{background:var(--gr);border-color:var(--gr);color:#fff;}
+.tt{font-size:13px;line-height:1.4;}
+.tt.on{color:var(--mu);text-decoration:line-through;}
+.mr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--b1);cursor:pointer;}
+.mr:last-child{border-bottom:none;}
+.md{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.mt{flex:1;font-size:14px;}
+.mt.on{color:var(--mu);text-decoration:line-through;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 18px;border-radius:9px;border:none;font-size:14px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:opacity .15s,transform .1s;}
+.btn:active{opacity:.75;transform:scale(.97);}
+.btp{background:var(--ac);color:#fff;}
+.btg{background:var(--s2);color:var(--tx);}
+.btd{background:var(--rd2);color:var(--rd);}
+.bts{padding:5px 11px;font-size:12px;border-radius:7px;}
+.ab{width:calc(100% - 24px);margin:8px 12px;padding:12px;background:var(--s1);border:1px dashed var(--b2);border-radius:var(--ra);color:var(--mu);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;}
+.ab:hover{border-color:var(--ac);color:var(--ac);}
+
+/* ── PROGRESS ── */
+.prw{background:var(--s2);border-radius:99px;height:5px;overflow:hidden;margin:6px 0;}
+.prf{height:100%;border-radius:99px;transition:width .5s;}
+
+/* ── MODAL ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:none;align-items:flex-end;justify-content:center;}
+.ov.on{display:flex;}
+.mo{background:var(--s1);border-radius:22px 22px 0 0;padding:22px 16px 40px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;}
+.mot{font-size:18px;font-weight:600;margin-bottom:18px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:12px;color:var(--mu);margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:11px 13px;color:var(--tx);font-size:14px;outline:none;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--ac);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── SYNC INDICATOR ── */
+.sync{position:fixed;top:12px;right:12px;background:var(--gr2);color:var(--gr);font-size:11px;padding:4px 10px;border-radius:99px;z-index:200;display:none;align-items:center;gap:5px;}
+.sync.on{display:flex;}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* ── INSTALL BANNER ── */
+.ibanner{margin:8px 12px;padding:12px 14px;background:var(--ac2);border:1px solid rgba(124,127,245,.3);border-radius:var(--ra);display:none;align-items:center;gap:10px;}
+.ibanner.on{display:flex;}
+.ibanner p{flex:1;font-size:13px;color:var(--tx);}
+
+@media(min-width:520px){
+  .page,.nav{max-width:480px;margin-left:auto;margin-right:auto;}
+  .nav{left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;}
+  .ov{align-items:center;}
+  .mo{border-radius:18px;margin:16px;}
+}
+::-webkit-scrollbar{width:0;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">⚡</div>
+    <div class="login-title">LifeOS</div>
+    <div class="login-sub">Your daily operating system.<br>Schedule · Finance · Goals. All in sync.</div>
+    <button class="btn-google" onclick="signIn()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <p class="login-note">Your data is private and encrypted. Syncs instantly between iPhone and Mac.</p>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div style="text-align:center;">
+    <div class="loader" style="margin:0 auto 16px;"></div>
+    <div style="font-size:14px;color:var(--mu);">Loading your data…</div>
+  </div>
+</div>
+
+<!-- SYNC INDICATOR -->
+<div class="sync" id="sync-ind"><div class="sync-dot"></div>Synced</div>
+
+<!-- INSTALL BANNER -->
+<div class="ibanner" id="install-banner">
+  <p>Install LifeOS as an app for the best experience</p>
+  <button class="btn btp bts" onclick="installApp()">Install</button>
+  <button class="btg bts btn" onclick="document.getElementById('install-banner').classList.remove('on')" style="padding:5px 8px;">✕</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- TODAY -->
+<div class="page active" id="pg-today">
+  <div class="cw">
+    <div class="ck" id="clock">--:--</div>
+    <div class="dl" id="dateline"></div>
+    <div class="gr" id="greeting"></div>
+  </div>
+  <div id="next-wrap"></div>
+  <div class="sec"><div class="sl">Coming up today</div></div>
+  <div class="tlw" id="today-tl"></div>
+  <div class="sec"><div class="sl">Tomorrow starts with</div></div>
+  <div class="card" style="padding:10px 14px;" id="tom-prev"></div>
+  <div class="sec"><div class="sl">Water</div></div>
+  <div style="padding:0 16px 4px;"><div class="wrow" id="wrow"></div><div style="font-size:12px;color:var(--mu);" id="wlabel">0 / 3.5 L</div></div>
+  <div class="sec"><div class="sl">Finance snapshot</div></div>
+  <div class="sg">
+    <div class="sb"><div class="sbl">Total debt</div><div class="sbv" id="snap-d" style="color:var(--rd);">$—</div></div>
+    <div class="sb"><div class="sbl">This month income</div><div class="sbv" id="snap-i" style="color:var(--gr);">$—</div></div>
+  </div>
+  <div style="height:14px;"></div>
+  <div class="qt"><p id="quote"></p></div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="page" id="pg-schedule">
+  <div class="ph">
+    <div class="ph-row">
+      <div><div class="pt" style="font-size:22px;font-weight:600;">Schedule</div><div class="ps" id="sched-lbl"></div></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btg bts" onclick="shiftDay(-1)">‹</button>
+        <button class="btn btg bts" onclick="shiftDay(0)">Today</button>
+        <button class="btn btg bts" onclick="shiftDay(1)">›</button>
+      </div>
+    </div>
+  </div>
+  <div class="tlw" id="sched-tl" style="padding-top:8px;"></div>
+  <button class="ab" onclick="openAddEvent()">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+    Add event
+  </button>
+</div>
+
+<!-- MONEY -->
+<div class="page" id="pg-money">
+  <div class="ph"><div class="pt" style="font-size:22px;font-weight:600;">Money</div><div class="ps" id="money-lbl"></div></div>
+  <div class="stabs">
+    <button class="stab on" onclick="showMTab('summary',this)">Summary</button>
+    <button class="stab" onclick="showMTab('debts',this)">Debts</button>
+    <button class="stab" onclick="showMTab('income',this)">Income</button>
+    <button class="stab" onclick="showMTab('expenses',this)">Expenses</button>
+  </div>
+  <div class="sp on" id="ms-summary">
+    <div class="sg" style="margin-top:8px;">
+      <div class="sb"><div class="sbl">Total debt</div><div class="sbv" id="sd" style="color:var(--rd);">$0</div></div>
+      <div class="sb"><div class="sbl">Month income</div><div class="sbv" id="si" style="color:var(--gr);">$0</div></div>
+      <div class="sb"><div class="sbl">Month expenses</div><div class="sbv" id="se" style="color:var(--am);">$0</div></div>
+      <div class="sb"><div class="sbl">Net this month</div><div class="sbv" id="sn">$0</div></div>
+    </div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:10px;">Pay these first (snowball)</div><div id="snowball"></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:10px;">Due in 14 days</div><div id="upcoming"></div></div>
+  </div>
+  <div class="sp" id="ms-debts"><div id="debts-list" style="padding:8px 12px 0;"></div><button class="ab" onclick="openAddDebt()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Add lender / debt</button></div>
+  <div class="sp" id="ms-income"><div id="income-list" style="padding:8px 12px 0;"></div><button class="ab" onclick="openAddIncome()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Log money received</button></div>
+  <div class="sp" id="ms-expenses"><div id="expense-list" style="padding:8px 12px 0;"></div><button class="ab" onclick="openAddExpense()"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Log expense</button></div>
+</div>
+
+<!-- MISSION -->
+<div class="page" id="pg-mission">
+  <div class="ph"><div class="pt" style="font-size:22px;font-weight:600;">Mission</div><div class="ps">Your path out of this chapter</div></div>
+  <div class="sec"><div class="sl">Coding roadmap — Software job</div></div>
+  <div style="padding:0 12px;" id="coding-rm"></div>
+  <div class="sec" style="margin-top:4px;"><div class="sl">Body transformation</div></div>
+  <div class="card" id="body-goals"></div>
+  <div class="sec" style="margin-top:4px;"><div class="sl">Life milestones</div></div>
+  <div class="card" style="margin-bottom:20px;" id="life-goals"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nb on" onclick="showPage('today',this)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Today</button>
+  <button class="nb" onclick="showPage('schedule',this)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Schedule</button>
+  <button class="nb" onclick="showPage('money',this)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Money</button>
+  <button class="nb" onclick="showPage('mission',this)"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>Mission</button>
+</nav>
+
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="ov" id="ov" onclick="maybeClose(event)"><div class="mo" id="mo"></div></div>
+
+<!-- FIREBASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║   STEP 1 — PASTE YOUR FIREBASE CONFIG BELOW         ║
+// ║   See SETUP_GUIDE.md for exactly how to get this    ║
+// ╚══════════════════════════════════════════════════════╝
+const firebaseConfig = {
+  apiKey:            "AIzaSyCb0-gq1GuCPuRofHJP5jsT7dzejkQUiY4",
+  authDomain:        "lifeos-9a66a.firebaseapp.com",
+  projectId:         "lifeos-9a66a",
+  storageBucket:     "lifeos-9a66a.firebasestorage.app",
+  messagingSenderId: "1054113416601",
+  appId:             "1:1054113416601:web:bff451a1b702df70877f08"
+};
+// ╔══════════════════════════════════════════════════════╗
+// ║   END OF CONFIG — do not edit below this line       ║
+// ╚══════════════════════════════════════════════════════╝
+
+// ── INIT ──
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+let uid = null;
+let D = { schedule:[], debts:[], income:[], expenses:[], codingGoals:[], bodyGoals:[], lifeGoals:[], water:{count:0,date:''} };
+let activePage = 'today';
+let schedOffset = 0;
+let activeMTab  = 'summary';
+
+// ── DEFAULT DATA (seeded on first login) ──
+const DEF_SCHEDULE = [
+  {time:'06:30',title:'Wake up — 500ml water',cat:'cwa',detail:'No phone for first 5 min.'},
+  {time:'06:50',title:'Breakfast prep',cat:'cf',detail:'Pesarattu batter soaked overnight. Boil 2 eggs.'},
+  {time:'07:10',title:'Breakfast',cat:'cf',detail:'3 pesarattu + 2 eggs + black coffee, no sugar. ~500 kcal.'},
+  {time:'07:45',title:'Workout / walk',cat:'cw2',detail:'Mon/Wed/Fri: 45min bodyweight. Tue/Thu/Sat: brisk walk.'},
+  {time:'08:30',title:'Get ready + pack snacks',cat:'cr',detail:'Pack sprouted moong, fruit, buttermilk bottle.'},
+  {time:'09:35',title:'Leave for college',cat:'co',detail:'EV bicycle, 20-25 min.'},
+  {time:'10:00',title:'Class batch 1',cat:'cc',detail:'Morning lectures.'},
+  {time:'11:30',title:'Mid-morning snack',cat:'cf',detail:'Sprouted moong + 1 fruit. ~150 kcal.'},
+  {time:'14:30',title:'Return home',cat:'co',detail:'Bicycle back.'},
+  {time:'14:45',title:'Lunch',cat:'cf',detail:'1 cup rice + dal + sabzi + curd. ~650 kcal.'},
+  {time:'15:30',title:'Study / coding session',cat:'cs',detail:'Tue/Thu: 40min walk first. Then LeetCode or coursework.'},
+  {time:'16:45',title:'Early dinner ⚠',cat:'cf',detail:'2 jowar roti + sabzi + 2 eggs / chicken. This IS your dinner. ~600 kcal.'},
+  {time:'17:00',title:'Leave for evening class',cat:'co',detail:'EV bicycle, arrive by 5:25 PM.'},
+  {time:'17:30',title:'Class batch 2',cat:'cc',detail:'Evening lectures.'},
+  {time:'19:30',title:'In-class snack',cat:'cf',detail:'Roasted chana or banana (packed). ~150 kcal.'},
+  {time:'22:00',title:'Return home',cat:'co',detail:'Bicycle.'},
+  {time:'22:30',title:'Light snack only',cat:'cf',detail:'1 glass buttermilk. Nothing solid after this.'},
+  {time:'22:45',title:'10-min walk',cat:'cw2',detail:'Terrace or room. Wind down.'},
+  {time:'23:00',title:'Phone away',cat:'csl',detail:'No screens. Breathe, stretch.'},
+  {time:'23:30',title:'Sleep',cat:'csl',detail:'6.5-7 hours. Non-negotiable.'},
+];
+
+const DEF_CODING = [
+  {sid:'1',phase:'Phase 1',title:'Python Fundamentals',weeks:'Weeks 1–8',status:'current',tasks:[
+    {id:'1',text:'Install Python + VS Code. Write "Hello World".',done:false},
+    {id:'2',text:'Variables, loops, conditionals, functions',done:false},
+    {id:'3',text:'freeCodeCamp Scientific Computing (Python)',done:false},
+    {id:'4',text:'Solve 30 easy LeetCode problems in Python',done:false},
+    {id:'5',text:'Build CLI calculator + to-do list (2 projects)',done:false},
+    {id:'6',text:'Learn Git: init, add, commit, push to GitHub',done:false},
+  ]},
+  {sid:'2',phase:'Phase 2',title:'Data Structures & Algorithms',weeks:'Weeks 9–20',status:'future',tasks:[
+    {id:'1',text:'Arrays, strings, two-pointer technique',done:false},
+    {id:'2',text:'Hashmaps, sets, stacks, queues',done:false},
+    {id:'3',text:'Trees, graphs, recursion basics',done:false},
+    {id:'4',text:'Solve 100 LeetCode problems (easy + medium)',done:false},
+    {id:'5',text:'Big O notation — understand time/space complexity',done:false},
+  ]},
+  {sid:'3',phase:'Phase 3',title:'Web Dev or Data Track',weeks:'Weeks 21–36',status:'future',tasks:[
+    {id:'1',text:'Choose: Frontend (React) or Data (SQL + Pandas)',done:false},
+    {id:'2',text:'Complete a full course on your chosen track',done:false},
+    {id:'3',text:'Build one complete project end-to-end',done:false},
+    {id:'4',text:'Deploy live on Vercel, Netlify, or GitHub Pages',done:false},
+  ]},
+  {sid:'4',phase:'Phase 4',title:'Job Hunt + Interview Prep',weeks:'Weeks 37–52',status:'future',tasks:[
+    {id:'1',text:'Polish LinkedIn: photo, headline, 3 projects',done:false},
+    {id:'2',text:'Mock interviews on Pramp (free)',done:false},
+    {id:'3',text:'Apply to 10 companies per week. Track in a sheet.',done:false},
+    {id:'4',text:'Target: entry-level SWE / data analyst in Bay Area',done:false},
+    {id:'5',text:'Land first technical interview ✓',done:false},
+  ]},
+];
+
+const DEF_BODY = [
+  {sid:'1',label:'Starting weight — Day 1',target:130,done:true},
+  {sid:'2',label:'First 5 kg lost (reach 125 kg)',target:125,done:false},
+  {sid:'3',label:'10 kg milestone (120 kg)',target:120,done:false},
+  {sid:'4',label:'Visible jawline + waist change',target:115,done:false},
+  {sid:'5',label:'20 kg milestone (110 kg)',target:110,done:false},
+  {sid:'6',label:'Goal weight (90–95 kg)',target:95,done:false},
+];
+
+const DEF_LIFE = [
+  {sid:'1',text:'Complete 30-day unbroken workout streak',done:false},
+  {sid:'2',text:'Pay off smallest debt completely',done:false},
+  {sid:'3',text:'Build and deploy first coding project',done:false},
+  {sid:'4',text:'Save $500 emergency fund',done:false},
+  {sid:'5',text:'Finish Phase 1 coding roadmap',done:false},
+  {sid:'6',text:'Get a technical interview callback',done:false},
+  {sid:'7',text:'Become fully debt-free',done:false},
+  {sid:'8',text:'Land first software job offer',done:false},
+  {sid:'9',text:'Reach goal weight (90–95 kg)',done:false},
+  {sid:'10',text:'Feel proud looking in the mirror',done:false},
+];
+
+// ── AUTH ──
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    uid = user.uid;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'flex';
+    await seedIfNeeded();
+    setupListeners();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+function signIn() {
+  const p = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(p).catch(e => alert('Sign-in failed: ' + e.message));
+}
+
+// ── SEED DEFAULT DATA ──
+async function seedIfNeeded() {
+  const snap = await db.collection('users').doc(uid).collection('schedule').limit(1).get();
+  if (!snap.empty) return;
+  const batch = db.batch();
+  const u = db.collection('users').doc(uid);
+  DEF_SCHEDULE.forEach(e => batch.set(u.collection('schedule').doc(), e));
+  DEF_CODING.forEach(e  => batch.set(u.collection('codingGoals').doc(e.sid), e));
+  DEF_BODY.forEach(e    => batch.set(u.collection('bodyGoals').doc(e.sid), e));
+  DEF_LIFE.forEach(e    => batch.set(u.collection('lifeGoals').doc(e.sid), e));
+  batch.set(u.collection('settings').doc('main'), {water:0, waterDate:''});
+  await batch.commit();
+}
+
+// ── REAL-TIME LISTENERS ──
+function setupListeners() {
+  const u = db.collection('users').doc(uid);
+  let loaded = 0; const needed = 7;
+  const check = () => { if (++loaded >= needed) onDataReady(); };
+
+  u.collection('schedule').onSnapshot(s => { D.schedule = s.docs.map(d=>({id:d.id,...d.data()})); check(); refreshCurrent(); });
+  u.collection('debts').onSnapshot(s    => { D.debts    = s.docs.map(d=>({id:d.id,...d.data()})); check(); refreshCurrent(); });
+  u.collection('income').onSnapshot(s   => { D.income   = s.docs.map(d=>({id:d.id,...d.data()})); check(); refreshCurrent(); });
+  u.collection('expenses').onSnapshot(s => { D.expenses = s.docs.map(d=>({id:d.id,...d.data()})); check(); refreshCurrent(); });
+  u.collection('codingGoals').onSnapshot(s => { D.codingGoals = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.sid-b.sid); check(); refreshCurrent(); });
+  u.collection('bodyGoals').onSnapshot(s  => { D.bodyGoals   = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.sid-b.sid); check(); refreshCurrent(); });
+  u.collection('lifeGoals').onSnapshot(s  => { D.lifeGoals   = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.sid-b.sid); check(); refreshCurrent(); });
+
+  u.collection('settings').doc('main').onSnapshot(s => {
+    if (s.exists) { const d=s.data(); D.water={count:d.water||0,date:d.waterDate||''}; renderWater(); }
+  });
+}
+
+function onDataReady() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  updateClock(); renderToday(); scheduleNotifications();
+  showSync();
+}
+
+function refreshCurrent() {
+  if (!document.getElementById('app').style.display || document.getElementById('app').style.display === 'none') return;
+  if (activePage==='today')    renderToday();
+  if (activePage==='schedule') renderSchedule();
+  if (activePage==='money')    renderMoneyTab(activeMTab);
+  if (activePage==='mission')  renderMission();
+  showSync();
+}
+
+// ── FIRESTORE HELPERS ──
+const U = () => db.collection('users').doc(uid);
+const add  = (col,data)    => U().collection(col).add(data);
+const upd  = (col,id,data) => U().collection(col).doc(id).update(data);
+const del  = (col,id)      => U().collection(col).doc(id).delete();
+
+// ── CLOCK ──
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONS3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const QUOTES=[
+  '28 and starting over is not failure — it\'s a relaunch.',
+  'The people you envy in Silicon Valley were once exactly where you are.',
+  'Every line of code you write is a door that opens.',
+  'Discipline is doing the right thing when no one is watching.',
+  'Your debt is a number. Numbers change. Stay consistent.',
+  'The version of you at 30 depends on decisions made at 28.',
+  'You don\'t need motivation. You need a system. This is it.',
+  'One bad day in 365 is 0.27%. Don\'t let it become 100%.',
+  'Being broke is temporary. Habits built now are permanent.',
+  'Getting jacked and getting hired both require the same thing: reps.',
+];
+
+function pad(n){return String(n).padStart(2,'0');}
+function fmt12(t){const[h,m]=t.split(':').map(Number);return(h%12||12)+':'+pad(m)+(h>=12?' PM':' AM');}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function fmtDate(s){const d=new Date(s+'T12:00');return MONS3[d.getMonth()]+' '+d.getDate();}
+function sameMonth(s,ref){const d=new Date(s+'T12:00');return d.getMonth()===ref.getMonth()&&d.getFullYear()===ref.getFullYear();}
+
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=pad(n.getHours())+':'+pad(n.getMinutes());
+  document.getElementById('dateline').textContent=DAYS[n.getDay()]+', '+MONS3[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear()+'  ·  Sunnyvale, CA';
+  const h=n.getHours();
+  document.getElementById('greeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', Subhash 💪';
+}
+
+// ── TODAY ──
+function renderToday(){
+  renderNextBanner(); renderTodayTL(); renderTomorrow(); renderWater(); renderSnap();
+  document.getElementById('quote').textContent=QUOTES[new Date().getDay()%QUOTES.length];
+}
+
+function renderNextBanner(){
+  const hhmm=pad(new Date().getHours())+':'+pad(new Date().getMinutes());
+  const nxt=[...D.schedule].sort((a,b)=>a.time.localeCompare(b.time)).find(e=>e.time>hhmm);
+  const el=document.getElementById('next-wrap');
+  el.innerHTML=nxt
+    ?`<div class="nb-card"><div class="nbl">Up next</div><div class="nbt">${fmt12(nxt.time)}</div><div class="nbx">${nxt.title}</div></div>`
+    :`<div class="nb-card"><div class="nbl">All done today</div><div class="nbx">Prep for tomorrow. Sleep on time. 💪</div></div>`;
+}
+
+function renderTodayTL(){
+  const hhmm=pad(new Date().getHours())+':'+pad(new Date().getMinutes());
+  const items=[...D.schedule].sort((a,b)=>a.time.localeCompare(b.time)).filter(e=>e.time>=hhmm).slice(0,6);
+  renderTL('today-tl',items,false);
+}
+
+function renderTomorrow(){
+  const items=[...D.schedule].sort((a,b)=>a.time.localeCompare(b.time)).slice(0,4);
+  document.getElementById('tom-prev').innerHTML=items.map(i=>`
+    <div style="display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--b1);">
+      <div class="tld ${i.cat}" style="flex-shrink:0;"></div>
+      <div style="flex:1;font-size:13px;">${i.title}</div>
+      <div style="font-size:12px;color:var(--mu);">${fmt12(i.time)}</div>
+    </div>`).join('')
+    +`<div style="font-size:12px;color:var(--ac);padding:7px 0 2px;cursor:pointer;" onclick="showPage('schedule',document.querySelectorAll('.nb')[1])">Full schedule →</div>`;
+}
+
+function renderWater(){
+  const td=new Date().toDateString();
+  const row=document.getElementById('wrow');
+  if(!row)return;
+  row.innerHTML='';
+  for(let i=0;i<7;i++){
+    const g=document.createElement('span');
+    g.className='wg'+(i<D.water.count?' on':'');
+    g.textContent='💧';
+    g.onclick=()=>{
+      const nc=D.water.count===(i+1)?i:i+1;
+      U().collection('settings').doc('main').set({water:nc,waterDate:td},{merge:true});
+    };
+    row.appendChild(g);
+  }
+  document.getElementById('wlabel').textContent=(D.water.count*.5).toFixed(1)+' / 3.5 L';
+}
+
+function renderSnap(){
+  const td=D.debts.reduce((s,d)=>s+Math.max(0,d.total-d.paid),0);
+  const n=new Date();
+  const mi=D.income.filter(i=>sameMonth(i.date,n)).reduce((s,i)=>s+i.amount,0);
+  document.getElementById('snap-d').textContent='$'+td.toLocaleString();
+  document.getElementById('snap-i').textContent='$'+mi.toLocaleString();
+}
+
+// ── SCHEDULE ──
+function renderSchedule(){
+  const d=new Date(); d.setDate(d.getDate()+schedOffset);
+  document.getElementById('sched-lbl').textContent=schedOffset===0?'Today — '+DAYS[d.getDay()]:DAYS[d.getDay()]+', '+MONS3[d.getMonth()]+' '+d.getDate();
+  renderTL('sched-tl',[...D.schedule].sort((a,b)=>a.time.localeCompare(b.time)),true);
+}
+
+function shiftDay(d){schedOffset=d===0?0:schedOffset+d;renderSchedule();}
+
+function renderTL(id,items,showDel){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(!items.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:12px 2px;">No events. Add one below.</div>';return;}
+  el.innerHTML=items.map((it,i)=>`
+    <div class="tli">
+      <div class="tlt">${fmt12(it.time)}</div>
+      <div class="tls"><div class="tld ${it.cat}"></div>${i<items.length-1?'<div class="tlln"></div>':''}</div>
+      <div class="tlb"><div class="tltl">${it.title}</div>${it.detail?`<div class="tldt">${it.detail}</div>`:''}</div>
+      ${showDel?`<button class="tldel" onclick="delEvent('${it.id}')">×</button>`:''}
+    </div>`).join('');
+}
+
+function delEvent(id){if(!confirm('Remove this event?'))return;del('schedule',id);}
+
+function openAddEvent(){
+  document.getElementById('mo').innerHTML=`
+    <div class="mot">New event</div>
+    <div class="fg"><label class="fl">Time</label><input class="fi" type="time" id="et" value="09:00"></div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="eT" placeholder="e.g. LeetCode practice"></div>
+    <div class="fg"><label class="fl">Detail (optional)</label><input class="fi" id="eD" placeholder="What exactly to do"></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="eC">
+      <option value="cf">Food / meal</option><option value="cw2">Workout</option>
+      <option value="cc">Class / lecture</option><option value="cs">Study / coding</option>
+      <option value="cwa">Water / health</option><option value="csl">Sleep / rest</option>
+      <option value="co">Commute</option><option value="cr">Other</option>
+    </select></div>
+    <button class="btn btp" style="width:100%;margin-top:4px;" onclick="saveEvent()">Add to schedule</button>`;
+  openM();
+}
+
+function saveEvent(){
+  const t=document.getElementById('et').value,T=document.getElementById('eT').value.trim();
+  if(!T){alert('Add a title');return;}
+  add('schedule',{time:t,title:T,cat:document.getElementById('eC').value,detail:document.getElementById('eD').value.trim()});
+  closeM();
+}
+
+// ── MONEY ──
+function showMTab(tab,btn){
+  activeMTab=tab;
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('on'));
+  document.getElementById('ms-'+tab).classList.add('on');
+  renderMoneyTab(tab);
+}
+
+function renderMoney(){
+  const n=new Date();
+  document.getElementById('money-lbl').textContent=MONS[n.getMonth()]+' '+n.getFullYear();
+  renderMoneyTab(activeMTab);
+}
+
+function renderMoneyTab(tab){
+  if(tab==='summary') renderSummary();
+  if(tab==='debts')   renderDebts();
+  if(tab==='income')  renderIncome();
+  if(tab==='expenses')renderExpenses();
+}
+
+function calcTotals(){
+  const n=new Date();
+  return {
+    td:D.debts.reduce((s,d)=>s+Math.max(0,d.total-d.paid),0),
+    mi:D.income.filter(i=>sameMonth(i.date,n)).reduce((s,i)=>s+i.amount,0),
+    me:D.expenses.filter(e=>sameMonth(e.date,n)).reduce((s,e)=>s+e.amount,0),
+  };
+}
+
+function renderSummary(){
+  const{td,mi,me}=calcTotals(); const net=mi-me;
+  document.getElementById('sd').textContent='$'+td.toLocaleString();
+  document.getElementById('si').textContent='$'+mi.toLocaleString();
+  document.getElementById('se').textContent='$'+me.toLocaleString();
+  const ne=document.getElementById('sn');
+  ne.textContent=(net>=0?'+':'')+('$'+Math.abs(net).toLocaleString());
+  ne.style.color=net>=0?'var(--gr)':'var(--rd)';
+
+  const sb=[...D.debts].map(d=>({...d,rem:d.total-d.paid})).filter(d=>d.rem>0).sort((a,b)=>a.rem-b.rem);
+  document.getElementById('snowball').innerHTML=!sb.length
+    ?'<div style="color:var(--mu);font-size:13px;">Add your lenders in the Debts tab.</div>'
+    :sb.map((d,i)=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--b1);">
+        <div class="sbn">${i+1}</div><div style="flex:1;font-size:13px;">${d.lender}</div>
+        <div style="font-size:14px;font-weight:600;color:var(--rd);">$${d.rem.toLocaleString()}</div></div>`).join('');
+
+  const today=new Date();
+  const up=D.debts.filter(d=>{if(!d.dueDate||d.total-d.paid<=0)return false;return(new Date(d.dueDate)-today)/86400000<=14;}).sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+  document.getElementById('upcoming').innerHTML=!up.length
+    ?'<div style="color:var(--mu);font-size:13px;">Nothing due in 14 days.</div>'
+    :up.map(d=>{const df=Math.ceil((new Date(d.dueDate)-today)/86400000);const c=df<=0?'var(--rd)':df<=5?'var(--am)':'var(--gr)';
+      return`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1);">
+        <div><div style="font-size:13px;font-weight:500;">${d.lender}</div><div style="font-size:12px;color:${c};">${df<=0?'OVERDUE':'Due in '+df+'d'}</div></div>
+        <div style="font-size:15px;font-weight:600;color:var(--am);">$${(d.minPayment||0).toLocaleString()}</div></div>`;}).join('');
+}
+
+function renderDebts(){
+  const el=document.getElementById('debts-list');
+  if(!D.debts.length){el.innerHTML='<div style="color:var(--mu);font-size:13px;padding:6px 0;">No debts yet. Add each lender below.</div>';return;}
+  el.innerHTML=D.debts.map(d=>{
+    const rem=Math.max(0,d.total-d.paid),pct=d.total>0?Math.round(d.paid/d.total*100):0;
+    const fc=pct<30?'var(--rd)':pct<70?'var(--am)':'var(--gr)';
+    const due=d.dueDate?new Date(d.dueDate):null;
+    const df=due?Math.ceil((due-new Date())/86400000):null;
+    const dt=df===null?'':df<=0?'⚠ OVERDUE':df<=5?`Due in ${df}d ⚠`:`Due ${fmtDate(d.dueDate)}`;
+    const dc=df===null?'var(--mu)':df<=0?'var(--rd)':df<=5?'var(--am)':'var(--mu)';
+    return`<div class="dc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div><div class="dn">${d.lender}</div>${d.notes?`<div class="dm">${d.notes}</div>`:''}</div>
+        <div style="text-align:right;"><div class="dr">$${rem.toLocaleString()}</div><div class="dm">of $${d.total.toLocaleString()} · ${pct}% paid</div></div>
+      </div>
+      <div class="pt"><div class="pf" style="width:${pct}%;background:${fc};"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:9px;">
+        <div style="font-size:12px;color:${dc};">${dt}${d.minPayment?'  Min $'+d.minPayment:''}</div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btg bts" onclick="openPayment('${d.id}')">Log payment</button>
+          <button class="btn btd bts" onclick="delDebt('${d.id}')">×</button>
+        </div>
+      </div></div>`;}).join('');
+}
+
+function renderIncome(){
+  const s=[...D.income].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('income-list').innerHTML=!s.length
+    ?'<div style="color:var(--mu);font-size:13px;padding:6px 0;">No income logged yet.</div>'
+    :s.map(i=>`<div class="li"><div><div style="font-size:14px;font-weight:500;">${i.source}</div><div style="font-size:12px;color:var(--mu);">${fmtDate(i.date)}${i.notes?' · '+i.notes:''}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="font-size:15px;font-weight:600;color:var(--gr);">+$${i.amount.toLocaleString()}</div>
+      <button onclick="del('income','${i.id}')" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;">×</button></div></div>`).join('');
+}
+
+function renderExpenses(){
+  const s=[...D.expenses].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  document.getElementById('expense-list').innerHTML=!s.length
+    ?'<div style="color:var(--mu);font-size:13px;padding:6px 0;">No expenses logged yet.</div>'
+    :s.map(e=>`<div class="li"><div><div style="font-size:14px;font-weight:500;">${e.category}</div><div style="font-size:12px;color:var(--mu);">${fmtDate(e.date)}${e.notes?' · '+e.notes:''}</div></div>
+      <div style="display:flex;align-items:center;gap:8px;"><div style="font-size:15px;font-weight:600;color:var(--am);">-$${e.amount.toLocaleString()}</div>
+      <button onclick="del('expenses','${e.id}')" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:18px;">×</button></div></div>`).join('');
+}
+
+function openAddDebt(){
+  document.getElementById('mo').innerHTML=`<div class="mot">Add debt / lender</div>
+    <div class="fg"><label class="fl">Who do you owe?</label><input class="fi" id="dl" placeholder="Friend Ravi, Chase card, etc."></div>
+    <div class="fr"><div class="fg"><label class="fl">Total owed ($)</label><input class="fi" id="dt" type="number" min="0" placeholder="800"></div>
+    <div class="fg"><label class="fl">Already paid ($)</label><input class="fi" id="dp" type="number" min="0" value="0"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Min. payment ($)</label><input class="fi" id="dm" type="number" min="0" placeholder="50"></div>
+    <div class="fg"><label class="fl">Next due date</label><input class="fi" id="dd" type="date"></div></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" id="dn" placeholder="0% interest, personal loan…"></div>
+    <button class="btn btp" style="width:100%;margin-top:6px;" onclick="saveDebt()">Add debt</button>`;
+  openM();
+}
+
+function saveDebt(){
+  const l=document.getElementById('dl').value.trim(),t=parseFloat(document.getElementById('dt').value)||0;
+  if(!l||t<=0){alert('Enter lender and amount');return;}
+  add('debts',{lender:l,total:t,paid:parseFloat(document.getElementById('dp').value)||0,minPayment:parseFloat(document.getElementById('dm').value)||0,dueDate:document.getElementById('dd').value,notes:document.getElementById('dn').value.trim()});
+  closeM();
+}
+
+function openPayment(id){
+  const d=D.debts.find(x=>x.id===id);
+  if(!d)return;
+  document.getElementById('mo').innerHTML=`<div class="mot">Log payment — ${d.lender}</div>
+    <div style="color:var(--mu);font-size:13px;margin-bottom:16px;">Remaining: $${(d.total-d.paid).toLocaleString()}</div>
+    <div class="fg"><label class="fl">Amount paid ($)</label><input class="fi" id="pa" type="number" min="0" value="${d.minPayment||''}"></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" id="pd" type="date" value="${todayStr()}"></div>
+    <button class="btn btp" style="width:100%;margin-top:6px;" onclick="applyPayment('${id}')">Record payment</button>`;
+  openM();
+}
+
+function applyPayment(id){
+  const amt=parseFloat(document.getElementById('pa').value)||0;
+  const date=document.getElementById('pd').value||todayStr();
+  const d=D.debts.find(x=>x.id===id);
+  if(!d||amt<=0)return;
+  upd('debts',id,{paid:Math.min(d.total,d.paid+amt)});
+  add('expenses',{category:'Debt payment — '+d.lender,amount:amt,date,notes:''});
+  closeM();
+}
+
+function delDebt(id){if(!confirm('Remove this debt?'))return;del('debts',id);}
+
+function openAddIncome(){
+  document.getElementById('mo').innerHTML=`<div class="mot">Log income received</div>
+    <div class="fg"><label class="fl">Source</label><input class="fi" id="is" placeholder="Stipend, Family, Part-time gig…"></div>
+    <div class="fr"><div class="fg"><label class="fl">Amount ($)</label><input class="fi" id="ia" type="number" min="0" placeholder="400"></div>
+    <div class="fg"><label class="fl">Date received</label><input class="fi" id="id2" type="date" value="${todayStr()}"></div></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" id="in" placeholder="Optional note"></div>
+    <button class="btn btp" style="width:100%;margin-top:6px;" onclick="saveIncome()">Save</button>`;
+  openM();
+}
+
+function saveIncome(){
+  const s=document.getElementById('is').value.trim(),a=parseFloat(document.getElementById('ia').value)||0;
+  if(!s||a<=0){alert('Enter source and amount');return;}
+  add('income',{source:s,amount:a,date:document.getElementById('id2').value||todayStr(),notes:document.getElementById('in').value.trim()});
+  closeM();
+}
+
+function openAddExpense(){
+  document.getElementById('mo').innerHTML=`<div class="mot">Log expense</div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="ec">
+      <option>Rent</option><option>Food / groceries</option><option>Transport</option>
+      <option>Utilities / phone</option><option>Supplements / gym</option>
+      <option>Entertainment</option><option>Debt payment</option><option>Miscellaneous</option>
+    </select></div>
+    <div class="fr"><div class="fg"><label class="fl">Amount ($)</label><input class="fi" id="ea" type="number" min="0" placeholder="45"></div>
+    <div class="fg"><label class="fl">Date</label><input class="fi" id="ed" type="date" value="${todayStr()}"></div></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><input class="fi" id="en" placeholder="Costco, BART fare…"></div>
+    <button class="btn btp" style="width:100%;margin-top:6px;" onclick="saveExpense()">Save</button>`;
+  openM();
+}
+
+function saveExpense(){
+  const a=parseFloat(document.getElementById('ea').value)||0;
+  if(a<=0){alert('Enter an amount');return;}
+  add('expenses',{category:document.getElementById('ec').value,amount:a,date:document.getElementById('ed').value||todayStr(),notes:document.getElementById('en').value.trim()});
+  closeM();
+}
+
+// ── MISSION ──
+function renderMission(){
+  document.getElementById('coding-rm').innerHTML=D.codingGoals.map(ph=>{
+    const dn=ph.tasks.filter(t=>t.done).length,tot=ph.tasks.length,pct=tot?Math.round(dn/tot*100):0;
+    const bc=ph.status==='current'?'bcu':ph.status==='done'?'bcd':'bcf';
+    const bt=ph.status==='current'?'▶ In progress':ph.status==='done'?'✓ Done':'Locked';
+    return`<div class="pc">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div><div style="font-size:11px;color:var(--mu);margin-bottom:2px;">${ph.weeks}</div>
+        <div style="font-size:16px;font-weight:600;">${ph.phase}: ${ph.title}</div></div>
+        <span class="pbadge ${bc}">${bt}</span></div>
+      <div class="prw"><div class="prf" style="width:${pct}%;background:var(--ac);"></div></div>
+      <div style="font-size:11px;color:var(--mu);margin:4px 0 8px;">${dn} / ${tot} · ${pct}%</div>
+      ${ph.tasks.map(t=>`<div class="tr">
+        <div class="tc ${t.done?'on':''}" onclick="toggleTask('${ph.id}','${t.id}')">${t.done?'✓':''}</div>
+        <div class="tt ${t.done?'on':''}">${t.text}</div></div>`).join('')}
+    </div>`;}).join('');
+
+  document.getElementById('body-goals').innerHTML=D.bodyGoals.map(m=>`
+    <div class="mr"><div class="md" style="background:${m.done?'var(--gr)':'var(--mu)'};"></div>
+    <div class="mt ${m.done?'on':''}">${m.label}</div>
+    <div style="font-size:13px;color:${m.done?'var(--gr)':'var(--mu)'};">${m.done?'✓':'→ '+m.target+' kg'}</div></div>`).join('');
+
+  document.getElementById('life-goals').innerHTML=D.lifeGoals.map(m=>`
+    <div class="mr" onclick="toggleLife('${m.id}')">
+    <div class="md" style="background:${m.done?'var(--gr)':'var(--ac)'};"></div>
+    <div class="mt ${m.done?'on':''}">${m.text}</div>
+    <div style="font-size:16px;color:${m.done?'var(--gr)':'var(--mu)'};">${m.done?'✓':'›'}</div></div>`).join('');
+}
+
+function toggleTask(phId,tId){
+  const ph=D.codingGoals.find(p=>p.id===phId);
+  if(!ph)return;
+  const tasks=ph.tasks.map(t=>t.id===tId?{...t,done:!t.done}:t);
+  const allDone=tasks.every(t=>t.done);
+  upd('codingGoals',phId,{tasks,status:allDone?'done':ph.status});
+}
+
+function toggleLife(id){
+  const g=D.lifeGoals.find(x=>x.id===id);
+  if(!g)return;
+  upd('lifeGoals',id,{done:!g.done});
+}
+
+// ── NAV ──
+function showPage(name,btn){
+  activePage=name;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('active');
+  if(btn)btn.classList.add('on');
+  if(name==='today')    renderToday();
+  if(name==='schedule') renderSchedule();
+  if(name==='money')    renderMoney();
+  if(name==='mission')  renderMission();
+}
+
+// ── MODAL ──
+function openM(){document.getElementById('ov').classList.add('on');}
+function closeM(){document.getElementById('ov').classList.remove('on');}
+function maybeClose(e){if(e.target===document.getElementById('ov'))closeM();}
+
+// ── NOTIFICATIONS ──
+function scheduleNotifications(){
+  if(!('Notification' in window))return;
+  Notification.requestPermission().then(p=>{
+    if(p!=='granted')return;
+    const now=new Date();
+    D.schedule.forEach(ev=>{
+      const[h,m]=ev.time.split(':').map(Number);
+      const t=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0,0);
+      const delay=t-now;
+      if(delay>60000&&delay<86400000){
+        setTimeout(()=>{
+          new Notification('LifeOS — '+ev.title,{
+            body:fmt12(ev.time)+(ev.detail?' · '+ev.detail.slice(0,60):''),
+            icon:'icon.svg', tag:'lifeos-'+ev.id,
+          });
+        },delay);
+      }
+    });
+  });
+}
+
+// ── SYNC FLASH ──
+let syncTimer;
+function showSync(){
+  const el=document.getElementById('sync-ind');
+  el.classList.add('on');
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>el.classList.remove('on'),2500);
+}
+
+// ── PWA INSTALL ──
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').classList.add('on');
+});
+function installApp(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('install-banner').classList.remove('on');});
+}
+
+// ── SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.log('SW:',e));
+}
+
+// ── CLOCK TICK ──
+updateClock();
+setInterval(updateClock,30000);
+</script>
+</body>
+</html>
