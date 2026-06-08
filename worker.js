@@ -1,6 +1,6 @@
 // LifeOS AI Proxy — Cloudflare Worker
-// Keeps your Claude API key secure on the server side.
-// Deploy this to Cloudflare Workers, then add CLAUDE_API_KEY as an environment variable.
+// Keeps your Claude API key secure. Requires APP_SECRET env variable.
+// Add both CLAUDE_API_KEY and APP_SECRET as Cloudflare secrets.
 
 export default {
   async fetch(request, env) {
@@ -9,9 +9,9 @@ export default {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io',
           'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type, X-App-Secret',
         },
       });
     }
@@ -20,15 +20,28 @@ export default {
       return new Response('Method not allowed', { status: 405 });
     }
 
+    // ── Secret check — blocks anyone without the key ──
+    const secret = request.headers.get('X-App-Secret');
+    if (!env.APP_SECRET || secret !== env.APP_SECRET) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io' },
+      });
+    }
+
     if (!env.CLAUDE_API_KEY) {
       return new Response(JSON.stringify({ error: 'API key not configured' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io' },
       });
     }
 
     try {
       const body = await request.json();
+
+      // Enforce safe limits — prevents large payload abuse
+      const messages = (body.messages || []).slice(-10);
+      const systemText = (body.system || '').slice(0, 2000);
 
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -40,8 +53,8 @@ export default {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 600,
-          system: body.system || '',
-          messages: body.messages || [],
+          system: systemText,
+          messages: messages,
         }),
       });
 
@@ -50,14 +63,14 @@ export default {
       return new Response(JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io',
         },
       });
 
     } catch (err) {
       return new Response(JSON.stringify({ error: err.message }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io' },
       });
     }
   },
