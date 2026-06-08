@@ -360,6 +360,10 @@
         <div class="card-hdr"><span class="card-ttl">Income History</span></div>
         <div id="inc-list"><div id="inc-empty" style="text-align:center;color:var(--tx3);font-size:14px;padding:1rem">No income logged yet.</div></div>
       </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">Expense History</span></div>
+        <div id="exp-list"><div id="exp-empty" style="text-align:center;color:var(--tx3);font-size:14px;padding:1rem">No expenses logged yet.</div></div>
+      </div>
     </div>
 
     <!-- ══ BODY ══ -->
@@ -609,7 +613,7 @@ const calcAge = () => { const d=new Date(1998,7,27),n=new Date(); let a=n.getFul
 //  AI CALL
 // ============================================================
 async function callAI(system, messages) {
-  if (!WORKER_URL || WORKER_URL === 'https://lifeos.subhashbudati1998.workers.dev/') {
+  if (!WORKER_URL || WORKER_URL.includes('YOUR_CLOUDFLARE')) {
     throw new Error('Worker URL not set — follow PHASE2_SETUP.md');
   }
   const res = await fetch(WORKER_URL, {
@@ -619,7 +623,7 @@ async function callAI(system, messages) {
   });
   const data = await res.json();
   if (data.error) throw new Error(data.error);
-  return data.content[0].text;
+  return data.content?.[0]?.text ?? 'No response from AI.';
 }
 
 function buildProfile() {
@@ -1015,8 +1019,9 @@ async function markDone(id,cur) {
   if(nd===today) await addXP(5,'Schedule task done');
 }
 function updateMgPreview() {
-  const h=new Date().getHours();
-  const up=schedEvts.filter(e=>parseInt(e.time)>=h).slice(0,3);
+  const now=new Date(), nowMins=now.getHours()*60+now.getMinutes();
+  const toMins=t=>{ const [h,m]=t.split(':').map(Number); return h*60+m; };
+  const up=schedEvts.filter(e=>toMins(e.time)>=nowMins).slice(0,3);
   $('mg-p').textContent=up.length?up.map(e=>e.name.split('(')[0].trim()).join(' · '):'Enjoy your evening!';
 }
 async function saveEvent() {
@@ -1092,8 +1097,19 @@ function loadIncome() {
 }
 function loadExpenses() {
   db.collection('users').doc(uid).collection('expenses').onSnapshot(snap=>{
-    expenses=snap.docs.map(d=>({id:d.id,...d.data()})); updateFin();
+    expenses=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    updateFin(); renderExp();
   });
+}
+function renderExp() {
+  const l=$('exp-list'),e=$('exp-empty');
+  if(!expenses.length){e.style.display='block';l.innerHTML='';return;}
+  e.style.display='none';
+  l.innerHTML=expenses.slice(0,8).map(i=>`
+    <div class="fb" style="padding:10px 0;border-bottom:.5px solid var(--bd)">
+      <div><div style="font-size:14px;font-weight:500">${i.desc}</div><div style="font-size:12px;color:var(--tx3)">${i.date||''}</div></div>
+      <div style="font-size:18px;font-weight:700;color:var(--red)">-${fc(i.amount)}</div>
+    </div>`).join('');
 }
 function updateFin() {
   const it=incomes.reduce((s,i)=>s+(i.amount||0),0), et=expenses.reduce((s,e)=>s+(e.amount||0),0), b=it-et;
