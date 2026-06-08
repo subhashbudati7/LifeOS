@@ -34,6 +34,11 @@
     .login-sub { font-size: 15px; color: var(--tx2); margin-bottom: 3rem; text-align: center; line-height: 1.6; }
     .login-btn { background: var(--pur); color: #fff; border: none; border-radius: 16px; padding: 17px 32px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; max-width: 300px; transition: transform .1s, opacity .1s; }
     .login-btn:active { transform: scale(.97); opacity: .9; }
+    .login-or { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 300px; margin: 14px 0; color: var(--tx3); font-size: 13px; }
+    .login-or::before, .login-or::after { content: ''; flex: 1; height: .5px; background: var(--bd2); }
+    .login-input { width: 100%; max-width: 300px; background: var(--bg2); border: .5px solid var(--bd2); border-radius: 12px; padding: 14px 16px; color: var(--tx); font-size: 16px; outline: none; font-family: inherit; margin-bottom: 10px; }
+    .login-err { color: var(--red); font-size: 13px; margin-bottom: 10px; min-height: 18px; text-align: center; max-width: 300px; }
+    .login-sec { background: none; border: none; color: var(--tx3); font-size: 13px; cursor: pointer; margin-top: 8px; text-decoration: underline; }
 
     /* SHELL */
     #app { display: none; height: 100vh; flex-direction: column; }
@@ -232,7 +237,14 @@
   <div class="login-logo">L</div>
   <h1 class="login-title">LifeOS</h1>
   <p class="login-sub">Your personal operating system.<br>Level up every single day.</p>
-  <button class="login-btn" onclick="signIn()">Continue with Google</button>
+  <!-- Email / Password form -->
+  <input type="email"    class="login-input" id="l-email" placeholder="Email address" autocomplete="email">
+  <input type="password" class="login-input" id="l-pass"  placeholder="Password"      autocomplete="current-password">
+  <div class="login-err" id="l-err"></div>
+  <button class="login-btn" onclick="signInEmail()">Sign In</button>
+  <button class="login-sec" onclick="signUpEmail()">No account? Create one →</button>
+  <div class="login-or">or</div>
+  <button class="login-btn" style="background:var(--bg3);border:.5px solid var(--bd2);color:var(--tx2);font-weight:500" onclick="signInGoogle()">Continue with Google</button>
 </div>
 
 <!-- APP -->
@@ -836,27 +848,49 @@ Output a practical updated time-block schedule for tomorrow or the specified day
 // ============================================================
 //  AUTH
 // ============================================================
-function signIn() {
+function setLoginErr(msg) { $('l-err').textContent = msg; }
+
+async function signInEmail() {
+  const email = $('l-email').value.trim();
+  const pass  = $('l-pass').value;
+  if (!email || !pass) { setLoginErr('Enter email and password.'); return; }
+  setLoginErr('');
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e) {
+    setLoginErr(e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password'
+      ? 'Wrong email or password.' : e.message);
+  }
+}
+
+async function signUpEmail() {
+  const email = $('l-email').value.trim();
+  const pass  = $('l-pass').value;
+  if (!email || !pass) { setLoginErr('Enter email and a password (6+ chars).'); return; }
+  if (pass.length < 6) { setLoginErr('Password must be at least 6 characters.'); return; }
+  setLoginErr('');
+  try {
+    await auth.createUserWithEmailAndPassword(email, pass);
+  } catch(e) {
+    setLoginErr(e.code === 'auth/email-already-in-use'
+      ? 'Account exists — use Sign In instead.' : e.message);
+  }
+}
+
+function signInGoogle() {
   const p = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(p).catch(err => {
-    // Popup blocked (older iOS) — fall back to redirect
     if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
       auth.signInWithRedirect(p);
     } else {
-      alert('Sign-in failed: ' + err.message);
+      setLoginErr('Google sign-in failed: ' + err.message);
     }
   });
 }
 
-// Handle redirect result (catches the redirect flow on older iOS)
-auth.getRedirectResult().then(result => {
-  if (result && result.user) {
-    // onAuthStateChanged will fire and handle the rest
-  }
-}).catch(err => {
-  if (err.code !== 'auth/no-auth-event') {
-    alert('Sign-in failed: ' + err.message);
-  }
+// Catch any pending redirect result
+auth.getRedirectResult().catch(err => {
+  if (err.code && err.code !== 'auth/no-auth-event') setLoginErr(err.message);
 });
 
 auth.onAuthStateChanged(user => {
