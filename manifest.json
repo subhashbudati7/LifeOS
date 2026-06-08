@@ -1,11 +1,12 @@
 {
   "name": "LifeOS",
   "short_name": "LifeOS",
-  "description": "Your daily life operating system — schedule, money, goals",
-  "start_url": "/",
+  "description": "Your personal operating system — level up every day",
+  "start_url": "/LifeOS/",
+  "scope": "/LifeOS/",
   "display": "standalone",
-  "background_color": "#0f0f13",
-  "theme_color": "#0f0f13",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
   "orientation": "portrait-primary",
   "icons": [
     {

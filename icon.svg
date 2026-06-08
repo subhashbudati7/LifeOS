@@ -1,6 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0f0f13"/>
-  <rect x="32" y="32" width="448" height="448" rx="88" fill="#1a1a22"/>
-  <text x="256" y="350" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="260" font-weight="300" fill="#7c7ff5">L</text>
-  <circle cx="380" cy="148" r="28" fill="#22c55e"/>
+  <rect width="512" height="512" rx="112" fill="#0a0a0f"/>
+  <rect x="28" y="28" width="456" height="456" rx="90" fill="#12121a"/>
+  <rect x="28" y="28" width="456" height="456" rx="90" fill="none" stroke="#7c7ff5" stroke-width="2" opacity="0.4"/>
+  <text x="256" y="358" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="268" font-weight="200" fill="#7c7ff5">L</text>
+  <circle cx="376" cy="148" r="30" fill="#22c55e"/>
+  <circle cx="376" cy="148" r="18" fill="#0a0a0f"/>
+  <circle cx="376" cy="148" r="8" fill="#22c55e"/>
 </svg>
