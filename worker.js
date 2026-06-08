@@ -36,6 +36,15 @@ export default {
       });
     }
 
+    // Block oversized payloads (50 KB max)
+    const cl = parseInt(request.headers.get('Content-Length') || '0');
+    if (cl > 50000) {
+      return new Response(JSON.stringify({ error: 'Payload too large' }), {
+        status: 413,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io' },
+      });
+    }
+
     try {
       const body = await request.json();
 
@@ -68,7 +77,7 @@ export default {
       });
 
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), {
+      return new Response(JSON.stringify({ error: 'Internal error' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://subhashbudati7.github.io' },
       });

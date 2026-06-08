@@ -20,7 +20,8 @@ self.addEventListener('fetch', e => {
 });
 
 self.addEventListener('push', e => {
-  const data = e.data ? e.data.json() : {};
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch(_) {}
   e.waitUntil(self.registration.showNotification(data.title || 'LifeOS', {
     body: data.body || '',
     icon: '/LifeOS/icon.svg',
