@@ -16,198 +16,212 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
   <style>
     :root {
-      --bg:      #0a0a0f;
-      --bg2:     #12121a;
-      --bg3:     #1a1a26;
-      --border:  #1e1e2e;
-      --border2: #2a2a3e;
-      --purple:  #7c7ff5;
-      --purple2: #5557c8;
-      --green:   #22c55e;
-      --gold:    #f59e0b;
-      --red:     #ef4444;
-      --blue:    #3b82f6;
-      --text:    #e2e8f0;
-      --text2:   #94a3b8;
-      --text3:   #475569;
-      --nav:     72px;
+      --bg:  #0a0a0f; --bg2: #12121a; --bg3: #1a1a26;
+      --bd:  #1e1e2e; --bd2: #2a2a3e;
+      --pur: #7c7ff5; --pu2: #5557c8;
+      --grn: #22c55e; --gld: #f59e0b;
+      --red: #ef4444; --blu: #3b82f6;
+      --tx:  #e2e8f0; --tx2: #94a3b8; --tx3: #475569;
+      --nav: 72px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif; height: 100%; overflow: hidden; }
+    html, body { background: var(--bg); color: var(--tx); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif; height: 100%; overflow: hidden; }
 
-    /* ---- LOGIN ---- */
-    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 2rem; background: var(--bg); }
-    .login-logo { width: 88px; height: 88px; border-radius: 24px; background: linear-gradient(135deg, var(--purple2), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 200; color: #fff; margin-bottom: 1.5rem; box-shadow: 0 0 40px rgba(124,127,245,0.3); }
+    /* LOGIN */
+    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 2rem; }
+    .login-logo { width: 88px; height: 88px; border-radius: 24px; background: linear-gradient(135deg, var(--pu2), var(--pur)); display: flex; align-items: center; justify-content: center; font-size: 44px; font-weight: 200; color: #fff; margin-bottom: 1.5rem; box-shadow: 0 0 40px rgba(124,127,245,.3); }
     .login-title { font-size: 36px; font-weight: 700; margin-bottom: 6px; }
-    .login-sub { font-size: 15px; color: var(--text2); margin-bottom: 3rem; text-align: center; line-height: 1.6; }
-    .login-btn { background: var(--purple); color: #fff; border: none; border-radius: 16px; padding: 17px 32px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; max-width: 300px; transition: transform .1s, opacity .1s; }
+    .login-sub { font-size: 15px; color: var(--tx2); margin-bottom: 3rem; text-align: center; line-height: 1.6; }
+    .login-btn { background: var(--pur); color: #fff; border: none; border-radius: 16px; padding: 17px 32px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; max-width: 300px; transition: transform .1s, opacity .1s; }
     .login-btn:active { transform: scale(.97); opacity: .9; }
 
-    /* ---- APP SHELL ---- */
+    /* SHELL */
     #app { display: none; height: 100vh; flex-direction: column; }
     #app.active { display: flex; }
-    .content-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: calc(var(--nav) + 1rem); -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+    .content-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: calc(var(--nav) + 1rem); -webkit-overflow-scrolling: touch; }
     .tab { display: none; padding: 0 1rem; }
     .tab.active { display: block; }
 
-    /* ---- BOTTOM NAV ---- */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav); background: rgba(18,18,26,.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: .5px solid var(--border); display: flex; align-items: flex-start; padding-top: 8px; z-index: 100; }
-    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 4px; color: var(--text3); transition: color .2s; }
-    .nav-btn.active { color: var(--purple); }
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav); background: rgba(18,18,26,.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-top: .5px solid var(--bd); display: flex; align-items: flex-start; padding-top: 8px; z-index: 100; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 6px 4px; color: var(--tx3); transition: color .2s; }
+    .nav-btn.active { color: var(--pur); }
     .nav-icon { font-size: 22px; line-height: 1; }
     .nav-label { font-size: 10px; font-weight: 500; }
 
-    /* ---- CARDS ---- */
-    .card { background: var(--bg2); border: .5px solid var(--border); border-radius: 18px; padding: 1rem 1.125rem; margin-bottom: 12px; }
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .card-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; }
-    .page-header { padding: 1rem 1rem .5rem; display: flex; align-items: center; justify-content: space-between; }
-    .page-title { font-size: 28px; font-weight: 700; }
+    /* CARDS */
+    .card { background: var(--bg2); border: .5px solid var(--bd); border-radius: 18px; padding: 1rem 1.125rem; margin-bottom: 12px; }
+    .card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card-ttl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .08em; }
+    .page-hdr { padding: 1rem 1rem .5rem; display: flex; align-items: center; justify-content: space-between; }
+    .page-ttl { font-size: 28px; font-weight: 700; }
 
-    /* ---- PROGRESS BARS ---- */
+    /* BARS */
     .bar-bg { background: var(--bg3); border-radius: 999px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; transition: width .8s cubic-bezier(.34,1.56,.64,1); }
-    .bar-h8 { height: 8px; }
-    .bar-h6 { height: 6px; }
-    .bar-purple { background: linear-gradient(90deg, var(--purple2), var(--purple)); }
-    .bar-green  { background: linear-gradient(90deg, #16a34a, var(--green)); }
-    .bar-gold   { background: linear-gradient(90deg, #d97706, var(--gold)); }
+    .bh8 { height: 8px; } .bh6 { height: 6px; }
+    .b-pur { background: linear-gradient(90deg,var(--pu2),var(--pur)); }
+    .b-grn { background: linear-gradient(90deg,#16a34a,var(--grn)); }
+    .b-gld { background: linear-gradient(90deg,#d97706,var(--gld)); }
 
-    /* ---- IDEAL MAN METER ---- */
+    /* IDEAL METER */
     .ideal-wrap { position: relative; width: 148px; height: 148px; margin: 0 auto 1rem; }
     .ideal-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .ring-bg   { fill: none; stroke: var(--bg3); stroke-width: 13; }
+    .ring-bg { fill: none; stroke: var(--bg3); stroke-width: 13; }
     .ring-fill { fill: none; stroke-width: 13; stroke-linecap: round; transition: stroke-dashoffset 1.2s cubic-bezier(.34,1.56,.64,1); }
-    .ideal-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
-    .ideal-pct  { font-size: 30px; font-weight: 700; }
-    .ideal-lbl  { font-size: 10px; color: var(--text3); letter-spacing: .06em; }
+    .ideal-txt { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .ideal-pct { font-size: 30px; font-weight: 700; }
+    .ideal-lbl { font-size: 10px; color: var(--tx3); letter-spacing: .06em; }
 
-    /* ---- STATS ROW ---- */
+    /* STATS */
     .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .stat-card { background: var(--bg2); border: .5px solid var(--border); border-radius: 14px; padding: 12px; text-align: center; }
+    .stat-card { background: var(--bg2); border: .5px solid var(--bd); border-radius: 14px; padding: 12px; text-align: center; }
     .stat-val { font-size: 22px; font-weight: 700; }
-    .stat-lbl { font-size: 10px; color: var(--text2); margin-top: 3px; letter-spacing: .04em; }
+    .stat-lbl { font-size: 10px; color: var(--tx2); margin-top: 3px; }
+    .lvl-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg3); border: .5px solid var(--pur); border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 600; color: var(--pur); cursor: pointer; }
 
-    /* ---- LEVEL BADGE ---- */
-    .level-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg3); border: .5px solid var(--purple); border-radius: 999px; padding: 5px 14px; font-size: 13px; font-weight: 600; color: var(--purple); cursor: pointer; }
-
-    /* ---- MORNING CARD ---- */
+    /* MORNING */
     .morning-card { background: linear-gradient(135deg,#1a1235 0%,#0d1a2e 100%); border: .5px solid #2a2040; border-radius: 20px; padding: 1.25rem; margin-bottom: 12px; }
-    .morning-greeting { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .morning-sub { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
-    .morning-quote { font-size: 13px; font-style: italic; color: var(--purple); border-left: 2px solid var(--purple); padding-left: 10px; line-height: 1.5; }
-    .morning-preview { font-size: 13px; color: var(--text2); margin-top: 10px; }
+    .mg-greeting { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .mg-sub { font-size: 13px; color: var(--tx2); margin-bottom: 10px; }
+    .mg-quote { font-size: 13px; font-style: italic; color: var(--pur); border-left: 2px solid var(--pur); padding-left: 10px; line-height: 1.5; }
+    .mg-preview { font-size: 13px; color: var(--tx2); margin-top: 10px; }
 
-    /* ---- HABITS ---- */
-    .habit-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: .5px solid var(--border); cursor: pointer; }
+    /* HABITS */
+    .habit-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: .5px solid var(--bd); cursor: pointer; }
     .habit-item:last-child { border-bottom: none; }
-    .habit-check { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--border2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .2s; }
-    .habit-check.done { background: var(--green); border-color: var(--green); }
-    .habit-check.done::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 700; }
-    .habit-lbl { font-size: 15px; flex: 1; }
-    .habit-lbl.done { text-decoration: line-through; color: var(--text3); }
-    .habit-xp { font-size: 12px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+    .h-check { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--bd2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .h-check.done { background: var(--grn); border-color: var(--grn); }
+    .h-check.done::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 700; }
+    .h-lbl { font-size: 15px; flex: 1; }
+    .h-lbl.done { text-decoration: line-through; color: var(--tx3); }
+    .h-xp { font-size: 12px; font-weight: 600; color: var(--gld); flex-shrink: 0; }
 
-    /* ---- SCHEDULE ---- */
-    .sched-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: .5px solid var(--border); align-items: flex-start; }
-    .sched-item:last-child { border-bottom: none; }
-    .sched-time { font-size: 12px; color: var(--text2); min-width: 68px; padding-top: 2px; flex-shrink: 0; }
-    .sched-body { flex: 1; }
-    .sched-name { font-size: 15px; font-weight: 500; }
-    .sched-tag { display: inline-block; font-size: 11px; border-radius: 6px; padding: 2px 8px; margin-top: 4px; }
-    .tag-class   { background: rgba(124,127,245,.15); color: var(--purple); }
-    .tag-meal    { background: rgba(34,197,94,.15);  color: var(--green);  }
-    .tag-workout { background: rgba(245,158,11,.15); color: var(--gold);   }
-    .tag-commute { background: rgba(59,130,246,.15); color: var(--blue);   }
-    .tag-study   { background: rgba(239,68,68,.15);  color: var(--red);    }
-    .sched-done-btn { background: none; border: .5px solid var(--border2); border-radius: 8px; color: var(--text3); padding: 4px 10px; font-size: 12px; cursor: pointer; flex-shrink: 0; transition: all .2s; }
-    .sched-done-btn.done { background: rgba(34,197,94,.1); color: var(--green); border-color: var(--green); }
+    /* SCHEDULE */
+    .si { display: flex; gap: 12px; padding: 10px 0; border-bottom: .5px solid var(--bd); align-items: flex-start; }
+    .si:last-child { border-bottom: none; }
+    .si-time { font-size: 12px; color: var(--tx2); min-width: 68px; padding-top: 2px; flex-shrink: 0; }
+    .si-body { flex: 1; }
+    .si-name { font-size: 15px; font-weight: 500; }
+    .si-tag { display: inline-block; font-size: 11px; border-radius: 6px; padding: 2px 8px; margin-top: 4px; }
+    .t-class   { background: rgba(124,127,245,.15); color: var(--pur); }
+    .t-meal    { background: rgba(34,197,94,.15);   color: var(--grn); }
+    .t-workout { background: rgba(245,158,11,.15);  color: var(--gld); }
+    .t-commute { background: rgba(59,130,246,.15);  color: var(--blu); }
+    .t-study   { background: rgba(239,68,68,.15);   color: var(--red); }
+    .si-btn { background: none; border: .5px solid var(--bd2); border-radius: 8px; color: var(--tx3); padding: 4px 10px; font-size: 12px; cursor: pointer; flex-shrink: 0; transition: all .2s; }
+    .si-btn.done { background: rgba(34,197,94,.1); color: var(--grn); border-color: var(--grn); }
 
-    /* ---- DEBT ---- */
-    .debt-item { padding: 12px 0; border-bottom: .5px solid var(--border); }
+    /* DEBT */
+    .debt-item { padding: 12px 0; border-bottom: .5px solid var(--bd); }
     .debt-item:last-child { border-bottom: none; }
     .debt-name { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
     .debt-row { display: flex; justify-content: space-between; align-items: flex-start; }
-    .debt-amount { font-size: 22px; font-weight: 700; color: var(--red); }
-    .debt-badges { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
-    .badge-pill { font-size: 11px; background: var(--bg3); border: .5px solid var(--border2); border-radius: 999px; padding: 3px 9px; color: var(--text2); }
-    .badge-pill.priority { border-color: var(--red); color: var(--red); }
+    .debt-amt { font-size: 22px; font-weight: 700; color: var(--red); }
+    .debt-pills { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+    .pill { font-size: 11px; background: var(--bg3); border: .5px solid var(--bd2); border-radius: 999px; padding: 3px 9px; color: var(--tx2); }
+    .pill.hot { border-color: var(--red); color: var(--red); }
 
-    /* ---- MEASURE GRID ---- */
-    .measure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .measure-item label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 4px; }
-    .measure-item input { width: 100%; background: var(--bg3); border: .5px solid var(--border2); border-radius: 10px; padding: 10px; color: var(--text); font-size: 16px; text-align: center; outline: none; }
+    /* MEASURES */
+    .mg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mg label { font-size: 12px; color: var(--tx2); display: block; margin-bottom: 4px; }
+    .mg input { width: 100%; background: var(--bg3); border: .5px solid var(--bd2); border-radius: 10px; padding: 10px; color: var(--tx); font-size: 16px; text-align: center; outline: none; }
 
-    /* ---- SELFIE GRID ---- */
+    /* SELFIE */
     .selfie-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
     .selfie-thumb { aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--bg3); }
     .selfie-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .selfie-add { aspect-ratio: 1; border-radius: 10px; border: 2px dashed var(--border2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: var(--text3); font-size: 12px; }
+    .selfie-add { aspect-ratio: 1; border-radius: 10px; border: 2px dashed var(--bd2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: var(--tx3); font-size: 12px; }
 
-    /* ---- VISION BOARD ---- */
+    /* VISION */
     .vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .vision-card { aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: var(--bg3); border: .5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .vision-card { aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: var(--bg3); border: .5px solid var(--bd); display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .vision-card img { width: 100%; height: 100%; object-fit: cover; }
-    .vision-add { flex-direction: column; gap: 6px; color: var(--text3); font-size: 13px; }
+    .vision-add { flex-direction: column; gap: 6px; color: var(--tx3); font-size: 13px; }
 
-    /* ---- ACHIEVEMENTS ---- */
+    /* ACHIEVEMENTS */
     .ach-row { display: flex; flex-wrap: wrap; gap: 8px; }
-    .ach { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px; background: var(--bg3); border-radius: 12px; border: .5px solid var(--border); min-width: 70px; opacity: .3; transition: opacity .3s; }
-    .ach.unlocked { opacity: 1; border-color: var(--gold); background: rgba(245,158,11,.05); }
+    .ach { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px; background: var(--bg3); border-radius: 12px; border: .5px solid var(--bd); min-width: 70px; opacity: .3; transition: opacity .3s; }
+    .ach.unlocked { opacity: 1; border-color: var(--gld); background: rgba(245,158,11,.05); }
     .ach-icon { font-size: 24px; }
-    .ach-name { font-size: 10px; color: var(--text2); text-align: center; }
+    .ach-name { font-size: 10px; color: var(--tx2); text-align: center; }
 
-    /* ---- MOOD ---- */
+    /* MOOD */
     .mood-row { display: flex; justify-content: space-between; }
     .mood-btn { font-size: 26px; background: none; border: 2px solid transparent; border-radius: 10px; padding: 5px; cursor: pointer; transition: border-color .15s, transform .1s; line-height: 1; }
-    .mood-btn.selected { border-color: var(--purple); transform: scale(1.2); }
+    .mood-btn.sel { border-color: var(--pur); transform: scale(1.2); }
 
-    /* ---- PLACEHOLDER CARDS ---- */
-    .ph-card { background: var(--bg2); border: .5px dashed var(--border2); border-radius: 18px; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 12px; }
-    .ph-icon { font-size: 38px; }
-    .ph-title { font-size: 17px; font-weight: 600; }
-    .ph-sub { font-size: 13px; color: var(--text2); line-height: 1.5; }
-    .ph-btn { margin-top: 8px; background: var(--bg3); border: .5px solid var(--purple); color: var(--purple); border-radius: 10px; padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    /* ── AI CHAT ── */
+    .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - var(--nav) - 80px); }
+    .chat-msgs { flex: 1; overflow-y: auto; padding: 12px 0; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+    .chat-bubble { max-width: 84%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+    .bubble-ai   { background: var(--bg2); border: .5px solid var(--bd); border-bottom-left-radius: 4px; align-self: flex-start; color: var(--tx); }
+    .bubble-user { background: var(--pur); border-bottom-right-radius: 4px; align-self: flex-end; color: #fff; }
+    .bubble-sys  { background: var(--bg3); border-radius: 10px; align-self: center; font-size: 12px; color: var(--tx3); padding: 6px 12px; max-width: 100%; }
+    .typing-dot  { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--tx3); animation: td 1.2s infinite; margin-right: 2px; }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes td { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} }
+    .chat-input-row { display: flex; gap: 8px; padding: 10px 0 4px; }
+    .chat-input { flex: 1; background: var(--bg2); border: .5px solid var(--bd2); border-radius: 22px; padding: 10px 16px; color: var(--tx); font-size: 15px; outline: none; font-family: inherit; }
+    .chat-send { background: var(--pur); color: #fff; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: transform .1s, opacity .1s; }
+    .chat-send:active { transform: scale(.92); opacity: .85; }
+    .chat-send:disabled { opacity: .4; cursor: default; }
+    .chat-chips { display: flex; gap: 6px; overflow-x: auto; padding: 0 0 8px; -webkit-overflow-scrolling: touch; }
+    .chat-chips::-webkit-scrollbar { display: none; }
+    .chip { background: var(--bg3); border: .5px solid var(--bd2); border-radius: 999px; padding: 6px 14px; font-size: 13px; color: var(--tx2); white-space: nowrap; cursor: pointer; flex-shrink: 0; transition: background .15s, color .15s; }
+    .chip:active { background: var(--pur); color: #fff; }
 
-    /* ---- MODALS ---- */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
-    .modal-backdrop.open { display: flex; }
-    .modal { background: var(--bg2); border-radius: 22px 22px 0 0; padding: 1.5rem; width: 100%; max-height: 88vh; overflow-y: auto; border-top: .5px solid var(--border2); }
-    .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.25rem; }
-    .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 1rem; }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { font-size: 13px; color: var(--text2); display: block; margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--bg3); border: .5px solid var(--border2); border-radius: 10px; padding: 12px; color: var(--text); font-size: 16px; outline: none; font-family: inherit; }
-    .form-group textarea { min-height: 80px; resize: none; }
-    .btn-primary { width: 100%; background: var(--purple); color: #fff; border: none; border-radius: 13px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .1s; }
-    .btn-primary:active { opacity: .85; transform: scale(.98); }
-    .btn-secondary { width: 100%; background: var(--bg3); color: var(--text); border: .5px solid var(--border2); border-radius: 13px; padding: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+    /* AI AFFORDABILITY */
+    .afford-result { background: var(--bg3); border-radius: 14px; padding: 1rem; margin-top: 10px; font-size: 14px; line-height: 1.6; }
+    .afford-yes { font-size: 22px; font-weight: 700; color: var(--grn); margin-bottom: 6px; }
+    .afford-no  { font-size: 22px; font-weight: 700; color: var(--red); margin-bottom: 6px; }
+    .afford-maybe { font-size: 22px; font-weight: 700; color: var(--gld); margin-bottom: 6px; }
 
-    /* ---- SIMULATOR ---- */
-    .sim-result { background: var(--bg3); border-radius: 12px; padding: 1rem; margin-top: 10px; font-size: 14px; line-height: 1.6; }
-    .sim-big { font-size: 30px; font-weight: 700; color: var(--green); }
+    /* AI MEAL */
+    .meal-result { background: var(--bg3); border-radius: 14px; padding: 1rem; margin-top: 10px; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
 
-    /* ---- LEVEL UP OVERLAY ---- */
-    #levelup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.88); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
-    #levelup-overlay.show { display: flex; }
-    .lu-emoji { font-size: 80px; margin-bottom: 1rem; }
-    .lu-title { font-size: 36px; font-weight: 800; color: var(--gold); margin-bottom: 8px; }
-    .lu-sub { font-size: 18px; color: var(--text2); margin-bottom: 2rem; }
+    /* AI SCHEDULE */
+    .sched-ai-result { background: var(--bg3); border-radius: 14px; padding: 1rem; margin-top: 10px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; color: var(--tx2); }
 
-    /* ---- TOAST ---- */
-    #toast { position: fixed; bottom: calc(var(--nav) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: .5px solid var(--border2); border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .2s, transform .2s; z-index: 300; white-space: nowrap; max-width: 90vw; text-overflow: ellipsis; overflow: hidden; }
+    /* MODALS */
+    .modal-bd { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+    .modal-bd.open { display: flex; }
+    .modal { background: var(--bg2); border-radius: 22px 22px 0 0; padding: 1.5rem; width: 100%; max-height: 88vh; overflow-y: auto; border-top: .5px solid var(--bd2); }
+    .modal-handle { width: 36px; height: 4px; background: var(--bd2); border-radius: 2px; margin: 0 auto 1.25rem; }
+    .modal-ttl { font-size: 20px; font-weight: 700; margin-bottom: 1rem; }
+    .fg { margin-bottom: 1rem; }
+    .fg label { font-size: 13px; color: var(--tx2); display: block; margin-bottom: 6px; }
+    .fg input, .fg select, .fg textarea { width: 100%; background: var(--bg3); border: .5px solid var(--bd2); border-radius: 10px; padding: 12px; color: var(--tx); font-size: 16px; outline: none; font-family: inherit; }
+    .fg textarea { min-height: 80px; resize: none; }
+    .btn-p { width: 100%; background: var(--pur); color: #fff; border: none; border-radius: 13px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity .15s, transform .1s; }
+    .btn-p:active { opacity: .85; transform: scale(.98); }
+    .btn-p:disabled { opacity: .5; cursor: default; }
+    .btn-s { width: 100%; background: var(--bg3); color: var(--tx); border: .5px solid var(--bd2); border-radius: 13px; padding: 14px; font-size: 16px; font-weight: 500; cursor: pointer; margin-top: 8px; }
+
+    /* SIMULATOR */
+    .sim-res { background: var(--bg3); border-radius: 12px; padding: 1rem; margin-top: 10px; font-size: 14px; line-height: 1.6; }
+    .sim-big { font-size: 30px; font-weight: 700; color: var(--grn); }
+
+    /* LEVEL UP */
+    #lu { position: fixed; inset: 0; background: rgba(0,0,0,.88); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+    #lu.show { display: flex; }
+    .lu-e { font-size: 80px; margin-bottom: 1rem; }
+    .lu-t { font-size: 36px; font-weight: 800; color: var(--gld); margin-bottom: 8px; }
+    .lu-s { font-size: 18px; color: var(--tx2); margin-bottom: 2rem; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: calc(var(--nav) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--bg3); border: .5px solid var(--bd2); border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .2s, transform .2s; z-index: 300; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis; }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ---- UTILS ---- */
-    .text-green { color: var(--green); }
-    .text-red   { color: var(--red);   }
-    .text-gold  { color: var(--gold);  }
-    .text-purple{ color: var(--purple);}
-    .flex-between { display: flex; align-items: center; justify-content: space-between; }
+    /* UTILS */
+    .tc-grn { color: var(--grn); } .tc-red { color: var(--red); }
+    .tc-gld { color: var(--gld); } .tc-pur { color: var(--pur); }
+    .fb { display: flex; align-items: center; justify-content: space-between; }
     .mt8 { margin-top: 8px; }
-    .section-lbl { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
-    input[type="file"]  { display: none; }
-    input[type="range"] { width: 100%; accent-color: var(--purple); height: 4px; cursor: pointer; }
+    .sec-lbl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+    input[type="file"] { display: none; }
+    input[type="range"] { width: 100%; accent-color: var(--pur); height: 4px; cursor: pointer; }
     ::-webkit-scrollbar { width: 0; }
   </style>
 </head>
@@ -223,85 +237,58 @@
 
 <!-- APP -->
 <div id="app">
-  <div class="content-area" id="content-area">
+  <div class="content-area" id="ca">
 
-    <!-- ══════════════════ HOME ══════════════════ -->
+    <!-- ══ HOME ══ -->
     <div class="tab active" id="tab-home">
-      <div class="page-header">
-        <span class="page-title" id="home-greeting">Welcome 👋</span>
-        <button class="level-badge" onclick="openModal('achievements-modal')">⚔️ <span id="level-name">Rookie</span></button>
+      <div class="page-hdr">
+        <span class="page-ttl" id="home-g">Welcome 👋</span>
+        <button class="lvl-badge" onclick="openM('m-ach')">⚔️ <span id="lv-name">Rookie</span></button>
       </div>
-
-      <!-- Morning briefing (shows before noon) -->
-      <div id="morning-card" class="morning-card" style="margin: 0 0 12px;">
-        <div class="morning-greeting" id="mg-greeting">Good morning, Subhash 🌅</div>
-        <div class="morning-sub" id="mg-date">Sunday, June 7</div>
-        <div class="morning-quote" id="mg-quote">"The man who moves a mountain begins by carrying away small stones."</div>
-        <div class="morning-preview">Today: <span id="mg-preview" style="color:var(--text)">Class 10AM · Workout · Cook</span></div>
+      <div id="morning-card" class="morning-card" style="margin:0 0 12px">
+        <div class="mg-greeting" id="mg-g">Good morning, Subhash 🌅</div>
+        <div class="mg-sub" id="mg-d">Sunday, June 7</div>
+        <div class="mg-quote" id="mg-q">"The man who moves a mountain begins by carrying away small stones."</div>
+        <div class="mg-preview">Today: <span id="mg-p" style="color:var(--tx)">Class 10AM · Workout · Cook</span></div>
       </div>
-
-      <!-- Ideal Man Meter -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Ideal Man Score</span>
-          <span style="font-size:11px;color:var(--text3)">Age <span id="age-display">27</span> · DOB Aug 27 1998</span>
+        <div class="card-hdr">
+          <span class="card-ttl">Ideal Man Score</span>
+          <span style="font-size:11px;color:var(--tx3)">Age <span id="age-d">27</span> · DOB Aug 27 1998</span>
         </div>
         <div class="ideal-wrap">
           <svg class="ideal-svg" viewBox="0 0 148 148">
-            <defs>
-              <linearGradient id="ig" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#5557c8"/>
-                <stop offset="100%" stop-color="#22c55e"/>
-              </linearGradient>
-            </defs>
+            <defs><linearGradient id="ig" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#5557c8"/><stop offset="100%" stop-color="#22c55e"/></linearGradient></defs>
             <circle class="ring-bg"   cx="74" cy="74" r="62"/>
-            <circle class="ring-fill" cx="74" cy="74" r="62" id="ideal-ring"
-              stroke="url(#ig)" stroke-dasharray="390" stroke-dashoffset="390"/>
+            <circle class="ring-fill" cx="74" cy="74" r="62" id="ideal-ring" stroke="url(#ig)" stroke-dasharray="390" stroke-dashoffset="390"/>
           </svg>
-          <div class="ideal-text">
-            <div class="ideal-pct" id="ideal-pct">0%</div>
-            <div class="ideal-lbl">IDEAL MAN</div>
-          </div>
+          <div class="ideal-txt"><div class="ideal-pct" id="ideal-pct">0%</div><div class="ideal-lbl">IDEAL MAN</div></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;text-align:center">
-          <div><div style="font-size:10px;color:var(--text3)">BODY</div><div id="sc-body" class="text-purple" style="font-size:13px;font-weight:600">0%</div></div>
-          <div><div style="font-size:10px;color:var(--text3)">HABITS</div><div id="sc-habits" class="text-purple" style="font-size:13px;font-weight:600">0%</div></div>
-          <div><div style="font-size:10px;color:var(--text3)">FINANCE</div><div id="sc-finance" class="text-purple" style="font-size:13px;font-weight:600">0%</div></div>
-          <div><div style="font-size:10px;color:var(--text3)">CODE</div><div id="sc-code" class="text-purple" style="font-size:13px;font-weight:600">0%</div></div>
+          <div><div style="font-size:10px;color:var(--tx3)">BODY</div><div id="sc-b" class="tc-pur" style="font-size:13px;font-weight:600">0%</div></div>
+          <div><div style="font-size:10px;color:var(--tx3)">HABITS</div><div id="sc-h" class="tc-pur" style="font-size:13px;font-weight:600">0%</div></div>
+          <div><div style="font-size:10px;color:var(--tx3)">FINANCE</div><div id="sc-f" class="tc-pur" style="font-size:13px;font-weight:600">0%</div></div>
+          <div><div style="font-size:10px;color:var(--tx3)">CODE</div><div id="sc-c" class="tc-pur" style="font-size:13px;font-weight:600">0%</div></div>
         </div>
       </div>
-
-      <!-- XP + Streak + Level -->
       <div class="stat-row">
-        <div class="stat-card"><div class="stat-val text-gold" id="xp-display">0</div><div class="stat-lbl">XP EARNED</div></div>
-        <div class="stat-card"><div class="stat-val" id="streak-display">🔥 0</div><div class="stat-lbl">DAY STREAK</div></div>
-        <div class="stat-card"><div class="stat-val text-purple" id="level-num">1</div><div class="stat-lbl">LEVEL</div></div>
+        <div class="stat-card"><div class="stat-val tc-gld" id="xp-d">0</div><div class="stat-lbl">XP EARNED</div></div>
+        <div class="stat-card"><div class="stat-val" id="str-d">🔥 0</div><div class="stat-lbl">DAY STREAK</div></div>
+        <div class="stat-card"><div class="stat-val tc-pur" id="lv-n">1</div><div class="stat-lbl">LEVEL</div></div>
       </div>
-
-      <!-- XP bar -->
       <div class="card" style="padding:.75rem 1rem">
-        <div class="flex-between" style="margin-bottom:6px">
-          <span style="font-size:13px;color:var(--text2)">Progress to next level</span>
-          <span style="font-size:13px;color:var(--gold)" id="xp-lbl">0 / 200 XP</span>
+        <div class="fb" style="margin-bottom:6px">
+          <span style="font-size:13px;color:var(--tx2)">Progress to next level</span>
+          <span style="font-size:13px;color:var(--gld)" id="xp-lbl">0 / 200 XP</span>
         </div>
-        <div class="bar-bg bar-h8"><div class="bar-fill bar-gold" id="xp-bar" style="width:0%"></div></div>
+        <div class="bar-bg bh8"><div class="bar-fill b-gld" id="xp-bar" style="width:0%"></div></div>
       </div>
-
-      <!-- Today's Missions -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Today's Missions</span>
-          <span style="font-size:13px;color:var(--text2)"><span id="habits-done">0</span>/6 complete</span>
-        </div>
+        <div class="card-hdr"><span class="card-ttl">Today's Missions</span><span style="font-size:13px;color:var(--tx2)"><span id="hb-done">0</span>/6 complete</span></div>
         <div id="habits-list"></div>
       </div>
-
-      <!-- Mood -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Mood Check-in</span>
-          <span style="font-size:11px;color:var(--gold)" id="mood-xp">+5 XP</span>
-        </div>
+        <div class="card-hdr"><span class="card-ttl">Mood Check-in</span><span style="font-size:11px;color:var(--gld)" id="mood-xp">+5 XP</span></div>
         <div class="mood-row">
           <button class="mood-btn" data-mood="1" onclick="setMood(1)">😞</button>
           <button class="mood-btn" data-mood="2" onclick="setMood(2)">😐</button>
@@ -310,187 +297,159 @@
           <button class="mood-btn" data-mood="5" onclick="setMood(5)">🔥</button>
         </div>
       </div>
-
-      <!-- Achievements preview -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Achievements</span>
-          <button style="background:none;border:none;color:var(--purple);font-size:13px;cursor:pointer" onclick="openModal('achievements-modal')">See all →</button>
-        </div>
-        <div class="ach-row" id="ach-preview"></div>
+        <div class="card-hdr"><span class="card-ttl">Achievements</span><button style="background:none;border:none;color:var(--pur);font-size:13px;cursor:pointer" onclick="openM('m-ach')">See all →</button></div>
+        <div class="ach-row" id="ach-prev"></div>
       </div>
     </div>
 
-    <!-- ══════════════════ SCHEDULE ══════════════════ -->
+    <!-- ══ SCHEDULE ══ -->
     <div class="tab" id="tab-schedule">
-      <div class="page-header">
-        <span class="page-title">Schedule</span>
-        <button style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer" onclick="openModal('add-event-modal')">+ Add</button>
+      <div class="page-hdr"><span class="page-ttl">Schedule</span><button style="background:var(--pur);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer" onclick="openM('m-ev')">+ Add</button></div>
+      <!-- AI Schedule builder -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">AI Schedule Helper 🤖</span><span style="font-size:10px;color:var(--grn);font-weight:600">LIVE</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">Describe any changes and AI will output an updated schedule for you.</div>
+        <textarea id="sched-ai-input" style="width:100%;background:var(--bg3);border:.5px solid var(--bd2);border-radius:10px;padding:12px;color:var(--tx);font-size:15px;outline:none;font-family:inherit;min-height:70px;resize:none" placeholder='e.g. "I skipped gym, add it tomorrow morning" or "I have an exam Friday, clear the evening"'></textarea>
+        <button class="btn-p mt8" id="sched-ai-btn" onclick="askSchedAI()">Rework My Schedule →</button>
+        <div class="sched-ai-result" id="sched-ai-res" style="display:none"></div>
       </div>
-      <div class="ph-card">
-        <div class="ph-icon">🤖</div>
-        <div class="ph-title">AI Schedule Builder</div>
-        <div class="ph-sub">Describe your week in plain text and AI builds + auto-adjusts your schedule. Coming in Phase 2.</div>
-        <button class="ph-btn" onclick="showToast('Phase 2 coming soon — needs Claude API key!')">Unlock with AI →</button>
-      </div>
-      <div class="section-lbl" id="sched-day-lbl">Today — Sunday</div>
+      <div class="sec-lbl" id="sched-day-lbl">Today</div>
       <div class="card"><div id="sched-list"></div></div>
     </div>
 
-    <!-- ══════════════════ MONEY ══════════════════ -->
+    <!-- ══ MONEY ══ -->
     <div class="tab" id="tab-money">
-      <div class="page-header"><span class="page-title">Money</span></div>
+      <div class="page-hdr"><span class="page-ttl">Money</span></div>
       <div class="card" style="text-align:center;padding:1.25rem">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Current Balance</div>
-        <div style="font-size:42px;font-weight:700" id="balance-display">$0</div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Current Balance</div>
+        <div style="font-size:42px;font-weight:700" id="bal-d">$0</div>
         <div style="display:flex;justify-content:center;gap:24px;margin-top:12px">
-          <div><div style="font-size:18px;font-weight:600" class="text-green" id="inc-total">$0</div><div style="font-size:10px;color:var(--text2);letter-spacing:.06em">INCOME</div></div>
-          <div><div style="font-size:18px;font-weight:600" class="text-red"   id="exp-total">$0</div><div style="font-size:10px;color:var(--text2);letter-spacing:.06em">EXPENSES</div></div>
-          <div><div style="font-size:18px;font-weight:600" class="text-red"   id="debt-total">$0</div><div style="font-size:10px;color:var(--text2);letter-spacing:.06em">TOTAL DEBT</div></div>
+          <div><div style="font-size:18px;font-weight:600" class="tc-grn" id="inc-tot">$0</div><div style="font-size:10px;color:var(--tx2)">INCOME</div></div>
+          <div><div style="font-size:18px;font-weight:600" class="tc-red" id="exp-tot">$0</div><div style="font-size:10px;color:var(--tx2)">EXPENSES</div></div>
+          <div><div style="font-size:18px;font-weight:600" class="tc-red" id="dbt-tot">$0</div><div style="font-size:10px;color:var(--tx2)">TOTAL DEBT</div></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-        <button class="btn-primary" style="padding:12px;font-size:14px" onclick="openModal('add-income-modal')">+ Add Income</button>
-        <button class="btn-secondary" style="margin-top:0;padding:12px;font-size:14px" onclick="openModal('add-expense-modal')">+ Expense</button>
+        <button class="btn-p" style="padding:12px;font-size:14px" onclick="openM('m-inc')">+ Add Income</button>
+        <button class="btn-s" style="margin-top:0;padding:12px;font-size:14px" onclick="openM('m-exp')">+ Expense</button>
       </div>
-      <!-- Affordability placeholder -->
-      <div class="ph-card">
-        <div class="ph-icon">🤔</div>
-        <div class="ph-title">Can I afford this?</div>
-        <div class="ph-sub">AI checks your balance, upcoming bills, and debts — then gives a straight yes/no with reasoning. Coming Phase 2.</div>
-        <button class="ph-btn" onclick="showToast('Phase 2 coming soon — needs Claude API key!')">Unlock with AI →</button>
-      </div>
-      <!-- Debts -->
+      <!-- AFFORDABILITY CHECKER — LIVE -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Debt Tracker</span>
-          <button style="background:none;border:none;color:var(--purple);font-size:13px;cursor:pointer" onclick="openModal('add-debt-modal')">+ Add</button>
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Sorted by avalanche method — highest interest first</div>
+        <div class="card-hdr"><span class="card-ttl">Can I Afford This? 🤖</span><span style="font-size:10px;color:var(--grn);font-weight:600">LIVE</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">AI checks your balance and upcoming obligations, then gives you a straight answer.</div>
+        <div class="fg"><label>What do you want to buy?</label><input type="text" id="afford-item" placeholder='e.g. "AirPods Pro — $249" or "Groceries for a week — $80"'></div>
+        <button class="btn-p" id="afford-btn" onclick="checkAffordability()">Can I Afford It? →</button>
+        <div class="afford-result" id="afford-res" style="display:none"></div>
+      </div>
+      <!-- DEBT -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">Debt Tracker</span><button style="background:none;border:none;color:var(--pur);font-size:13px;cursor:pointer" onclick="openM('m-dbt')">+ Add</button></div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">Sorted by avalanche method — highest interest first</div>
         <div id="debt-list"></div>
-        <div id="debt-empty" style="text-align:center;color:var(--text3);font-size:14px;padding:1rem;display:none">No debts yet. Add your first one above.</div>
+        <div id="debt-empty" style="text-align:center;color:var(--tx3);font-size:14px;padding:1rem;display:none">No debts yet.</div>
       </div>
-      <!-- Payoff simulator -->
       <div class="card">
-        <div class="card-header"><span class="card-title">Payoff Simulator</span></div>
-        <label style="font-size:13px;color:var(--text2)">Extra monthly payment</label>
-        <input type="range" min="0" max="500" step="10" value="100" id="sim-slider" oninput="updateSim()" style="margin:10px 0">
-        <div style="text-align:center;font-size:20px;font-weight:700;color:var(--purple);margin-bottom:10px" id="sim-val">$100 / month extra</div>
-        <div class="sim-result" id="sim-result"><div style="text-align:center;color:var(--text3);font-size:14px">Add your debts above to run the simulation.</div></div>
+        <div class="card-hdr"><span class="card-ttl">Payoff Simulator</span></div>
+        <label style="font-size:13px;color:var(--tx2)">Extra monthly payment</label>
+        <input type="range" min="0" max="500" step="10" value="100" id="sim-sl" oninput="updateSim()" style="margin:10px 0">
+        <div style="text-align:center;font-size:20px;font-weight:700;color:var(--pur);margin-bottom:10px" id="sim-val">$100 / month extra</div>
+        <div class="sim-res" id="sim-res"><div style="text-align:center;color:var(--tx3);font-size:14px">Add your debts above to run the simulation.</div></div>
       </div>
-      <!-- Income history -->
       <div class="card">
-        <div class="card-header"><span class="card-title">Income History</span></div>
-        <div id="income-list"><div id="income-empty" style="text-align:center;color:var(--text3);font-size:14px;padding:1rem">No income logged yet.</div></div>
+        <div class="card-hdr"><span class="card-ttl">Income History</span></div>
+        <div id="inc-list"><div id="inc-empty" style="text-align:center;color:var(--tx3);font-size:14px;padding:1rem">No income logged yet.</div></div>
       </div>
     </div>
 
-    <!-- ══════════════════ BODY ══════════════════ -->
+    <!-- ══ BODY ══ -->
     <div class="tab" id="tab-body">
-      <div class="page-header"><span class="page-title">Body</span></div>
-
-      <!-- Weight overview -->
+      <div class="page-hdr"><span class="page-ttl">Body</span></div>
       <div class="card" style="text-align:center">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:6px">Current Weight</div>
-        <div style="font-size:52px;font-weight:700" id="cur-weight">130</div>
-        <div style="font-size:14px;color:var(--text2)">kg &nbsp;·&nbsp; Goal: <span class="text-green">85 kg</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:6px">Current Weight</div>
+        <div style="font-size:52px;font-weight:700" id="cur-w">130</div>
+        <div style="font-size:14px;color:var(--tx2)">kg · Goal: <span class="tc-grn">85 kg</span></div>
         <div style="margin-top:14px">
-          <div class="flex-between" style="margin-bottom:6px">
-            <span style="font-size:13px;color:var(--text2)">Progress to goal</span>
-            <span style="font-size:13px" id="weight-pct">0%</span>
-          </div>
-          <div class="bar-bg bar-h8"><div class="bar-fill bar-green" id="weight-bar" style="width:0%"></div></div>
-          <div style="font-size:12px;color:var(--text3);margin-top:6px"><span id="w-lost">0</span> kg lost · <span id="w-left">45</span> kg to go</div>
+          <div class="fb" style="margin-bottom:6px"><span style="font-size:13px;color:var(--tx2)">Progress to goal</span><span style="font-size:13px" id="w-pct">0%</span></div>
+          <div class="bar-bg bh8"><div class="bar-fill b-grn" id="w-bar" style="width:0%"></div></div>
+          <div style="font-size:12px;color:var(--tx3);margin-top:6px"><span id="w-lost">0</span> kg lost · <span id="w-left">45</span> kg to go</div>
         </div>
       </div>
-
-      <!-- Log measurements -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Log Today's Measurements</span>
-          <span style="font-size:11px;color:var(--gold)">+10 XP</span>
+        <div class="card-hdr"><span class="card-ttl">Log Today's Measurements</span><span style="font-size:11px;color:var(--gld)">+10 XP</span></div>
+        <div class="mg">
+          <div><label>Weight (kg)</label><input type="number" id="in-w" placeholder="130" step="0.1"></div>
+          <div><label>Waist (cm)</label><input type="number" id="in-wa" placeholder="—"></div>
+          <div><label>Chest (cm)</label><input type="number" id="in-ch" placeholder="—"></div>
+          <div><label>Arm (cm)</label>  <input type="number" id="in-ar" placeholder="—"></div>
         </div>
-        <div class="measure-grid">
-          <div class="measure-item"><label>Weight (kg)</label><input type="number" id="in-weight" placeholder="130" step="0.1"></div>
-          <div class="measure-item"><label>Waist (cm)</label><input type="number" id="in-waist"  placeholder="—"></div>
-          <div class="measure-item"><label>Chest (cm)</label><input type="number" id="in-chest"  placeholder="—"></div>
-          <div class="measure-item"><label>Arm (cm)</label>  <input type="number" id="in-arm"    placeholder="—"></div>
-        </div>
-        <button class="btn-primary mt8" onclick="saveMeasurements()">Save Measurements</button>
+        <button class="btn-p mt8" onclick="saveMeasure()">Save Measurements</button>
       </div>
-
-      <!-- Daily Selfie Journal -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Daily Selfie Journal</span>
-          <span style="font-size:11px;color:var(--gold)">+15 XP</span>
-        </div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">One photo per day. Watch yourself transform.</div>
-        <input type="file" id="selfie-input" accept="image/*" capture="user" onchange="uploadSelfie(this)">
+        <div class="card-hdr"><span class="card-ttl">Daily Selfie Journal</span><span style="font-size:11px;color:var(--gld)">+15 XP</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">One photo per day. Watch yourself transform.</div>
+        <input type="file" id="selfie-in" accept="image/*" capture="user" onchange="uploadSelfie(this)">
         <div class="selfie-grid" id="selfie-grid">
-          <div class="selfie-add" onclick="document.getElementById('selfie-input').click()">
-            <span style="font-size:30px">📸</span><span>Add today</span>
-          </div>
+          <div class="selfie-add" onclick="document.getElementById('selfie-in').click()"><span style="font-size:30px">📸</span><span>Add today</span></div>
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center">⚠️ Requires Firebase Storage to be enabled in your console</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:8px;text-align:center">⚠️ Requires Firebase Storage to be enabled in your console</div>
       </div>
-
-      <!-- Vision Board -->
       <div class="card">
-        <div class="card-header"><span class="card-title">Vision Board</span></div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Your ideal life. Look at it every day.</div>
-        <input type="file" id="vision-input" accept="image/*" onchange="addVisionImg(this)">
+        <div class="card-hdr"><span class="card-ttl">Vision Board</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">Your ideal life. Look at it every day.</div>
+        <input type="file" id="vision-in" accept="image/*" onchange="addVision(this)">
         <div class="vision-grid" id="vision-grid">
-          <div class="vision-card vision-add" onclick="document.getElementById('vision-input').click()" style="display:flex">
-            <span style="font-size:30px">+</span>
-            <span style="font-size:13px;color:var(--text3)">Add image</span>
-          </div>
+          <div class="vision-card vision-add" onclick="document.getElementById('vision-in').click()" style="display:flex"><span style="font-size:30px">+</span><span style="font-size:13px;color:var(--tx3)">Add image</span></div>
         </div>
       </div>
-
-      <!-- Coding Roadmap -->
       <div class="card">
-        <div class="card-header">
-          <span class="card-title">Coding Roadmap</span>
-          <span style="font-size:13px;color:var(--text2)"><span id="code-done">0</span>/8 phases</span>
-        </div>
-        <div class="bar-bg bar-h6" style="margin-bottom:12px"><div class="bar-fill bar-purple" id="code-bar" style="width:0%"></div></div>
-        <div id="coding-list"></div>
+        <div class="card-hdr"><span class="card-ttl">Coding Roadmap</span><span style="font-size:13px;color:var(--tx2)"><span id="cd-done">0</span>/8 phases</span></div>
+        <div class="bar-bg bh6" style="margin-bottom:12px"><div class="bar-fill b-pur" id="cd-bar" style="width:0%"></div></div>
+        <div id="cd-list"></div>
       </div>
-
-      <!-- Fitbit placeholder -->
-      <div class="ph-card">
-        <div class="ph-icon">⌚</div>
-        <div class="ph-title">Google Fit / Fitbit Air</div>
-        <div class="ph-sub">Auto-sync steps, sleep, and heart rate. Requires developer account setup. Coming in Phase 3.</div>
-        <button class="ph-btn" onclick="showToast('Coming in Phase 3!')">Connect Device →</button>
+      <div style="background:var(--bg2);border:.5px dashed var(--bd2);border-radius:18px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;margin-bottom:12px">
+        <div style="font-size:38px">⌚</div>
+        <div style="font-size:17px;font-weight:600">Google Fit / Fitbit Air</div>
+        <div style="font-size:13px;color:var(--tx2)">Auto-sync steps, sleep, and heart rate. Requires developer account. Coming Phase 3.</div>
+        <button style="margin-top:8px;background:var(--bg3);border:.5px solid var(--pur);color:var(--pur);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer" onclick="toast('Coming in Phase 3!')">Connect Device →</button>
       </div>
     </div>
 
-    <!-- ══════════════════ COACH ══════════════════ -->
+    <!-- ══ COACH ══ -->
     <div class="tab" id="tab-coach">
-      <div class="page-header"><span class="page-title">Coach</span></div>
-      <div class="ph-card" style="padding:2rem">
-        <div style="font-size:64px;margin-bottom:6px">🤖</div>
-        <div class="ph-title" style="font-size:20px">LifeOS AI Coach</div>
-        <div class="ph-sub">Your personal advisor who knows your schedule, finances, body goals, and coding progress. Ask anything — it answers in context, not generically.</div>
-        <div style="background:var(--bg3);border-radius:12px;padding:1rem;text-align:left;margin:12px 0;width:100%">
-          <div style="font-size:12px;color:var(--text3);margin-bottom:8px;letter-spacing:.06em;font-weight:700">WHAT YOU'LL ASK</div>
-          <div style="font-size:13px;color:var(--text2);line-height:2.2">
-            💬 "What should I cook tonight?"<br>
-            💬 "Am I on track this week?"<br>
-            💬 "Can I afford AirPods right now?"<br>
-            💬 "Rearrange my schedule — I'm exhausted"<br>
-            💬 "Motivate me, I want to give up"
+      <div class="page-hdr"><span class="page-ttl">Coach 🤖</span></div>
+
+      <!-- CHAT COACH -->
+      <div class="card" style="padding:1rem">
+        <div class="card-hdr"><span class="card-ttl">LifeOS AI Coach</span><span style="font-size:10px;color:var(--grn);font-weight:600">LIVE</span></div>
+        <!-- Quick chips -->
+        <div class="chat-chips" id="chat-chips">
+          <div class="chip" onclick="sendChip(this.textContent)">Motivate me 🔥</div>
+          <div class="chip" onclick="sendChip(this.textContent)">Am I on track?</div>
+          <div class="chip" onclick="sendChip(this.textContent)">What to eat tonight?</div>
+          <div class="chip" onclick="sendChip(this.textContent)">How to pay debt faster?</div>
+          <div class="chip" onclick="sendChip(this.textContent)">I want to give up</div>
+          <div class="chip" onclick="sendChip(this.textContent)">Best coding resource today?</div>
+        </div>
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="chat-msgs">
+            <div class="chat-bubble bubble-sys">Your AI coach — knows your schedule, goals, finances, and streak.</div>
+            <div class="chat-bubble bubble-ai">Hey Subhash 👋 I'm your LifeOS coach. I know your full situation — weight goal, debts, classes, coding roadmap, everything. What do you need right now?</div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chat-in" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" id="chat-send" onclick="sendChat()">↑</button>
           </div>
         </div>
-        <button class="ph-btn" style="width:100%;padding:14px" onclick="showToast('Phase 2 — needs Claude API key (~$1/mo)')">Unlock AI Coach — Phase 2 →</button>
       </div>
-      <div class="ph-card">
-        <div class="ph-icon">🍛</div>
-        <div class="ph-title">Ingredient Meal Planner</div>
-        <div class="ph-sub">Tell AI what you have in your kitchen. It suggests Telangana meals within your 2,400 kcal daily target with step-by-step instructions.</div>
-        <button class="ph-btn" onclick="showToast('Phase 2 — needs Claude API key!')">Unlock with AI →</button>
+
+      <!-- MEAL PLANNER -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">Ingredient Meal Planner 🍛</span><span style="font-size:10px;color:var(--grn);font-weight:600">LIVE</span></div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">Type what you have. AI suggests Telangana meals within your 2,400 kcal target.</div>
+        <div class="fg"><label>What ingredients do you have?</label><textarea id="meal-ingredients" placeholder="e.g. rice, eggs, onion, tomato, ginger, oil, dal, green chilli"></textarea></div>
+        <button class="btn-p" id="meal-btn" onclick="getMealSuggestions()">Suggest Meals →</button>
+        <div class="meal-result" id="meal-res" style="display:none"></div>
       </div>
     </div>
 
@@ -504,95 +463,51 @@
     <button class="nav-btn"        id="nav-body"     onclick="switchTab('body')">    <span class="nav-icon">💪</span><span class="nav-label">Body</span></button>
     <button class="nav-btn"        id="nav-coach"    onclick="switchTab('coach')">   <span class="nav-icon">🤖</span><span class="nav-label">Coach</span></button>
   </nav>
-</div><!-- /app -->
-
-<!-- ══ MODALS ══ -->
-
-<!-- Achievements -->
-<div class="modal-backdrop" id="achievements-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">🏆 Achievements</div>
-    <div class="ach-row" id="all-ach"></div>
-    <button class="btn-secondary" onclick="closeModal('achievements-modal')">Close</button>
-  </div>
 </div>
 
-<!-- Add Event -->
-<div class="modal-backdrop" id="add-event-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Add Schedule Event</div>
-    <div class="form-group"><label>Event Name</label><input type="text" id="ev-name" placeholder="e.g., Morning workout"></div>
-    <div class="form-group"><label>Time</label><input type="time" id="ev-time"></div>
-    <div class="form-group"><label>Type</label>
-      <select id="ev-type">
-        <option value="class">Class</option>
-        <option value="workout">Workout</option>
-        <option value="meal">Meal</option>
-        <option value="commute">Commute</option>
-        <option value="study">Study</option>
-      </select>
-    </div>
-    <button class="btn-primary" onclick="saveEvent()">Save Event</button>
-    <button class="btn-secondary" onclick="closeModal('add-event-modal')">Cancel</button>
-  </div>
-</div>
+<!-- MODALS -->
+<div class="modal-bd" id="m-ach"><div class="modal"><div class="modal-handle"></div><div class="modal-ttl">🏆 Achievements</div><div class="ach-row" id="all-ach"></div><button class="btn-s" onclick="closeM('m-ach')">Close</button></div></div>
 
-<!-- Add Debt -->
-<div class="modal-backdrop" id="add-debt-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Add Debt</div>
-    <div class="form-group"><label>Lender / Name</label><input type="text" id="d-name" placeholder="e.g., Citibank Credit Card"></div>
-    <div class="form-group"><label>Amount Owed ($)</label><input type="number" id="d-amount" placeholder="0"></div>
-    <div class="form-group"><label>Interest Rate (% APR)</label><input type="number" id="d-interest" placeholder="0" step="0.1"></div>
-    <div class="form-group"><label>Minimum Monthly Payment ($)</label><input type="number" id="d-min" placeholder="0"></div>
-    <button class="btn-primary" onclick="saveDebt()">Add Debt</button>
-    <button class="btn-secondary" onclick="closeModal('add-debt-modal')">Cancel</button>
-  </div>
-</div>
+<div class="modal-bd" id="m-ev"><div class="modal"><div class="modal-handle"></div><div class="modal-ttl">Add Event</div>
+  <div class="fg"><label>Name</label><input type="text" id="ev-n" placeholder="e.g., Morning workout"></div>
+  <div class="fg"><label>Time</label><input type="time" id="ev-t"></div>
+  <div class="fg"><label>Type</label><select id="ev-ty"><option value="class">Class</option><option value="workout">Workout</option><option value="meal">Meal</option><option value="commute">Commute</option><option value="study">Study</option></select></div>
+  <button class="btn-p" onclick="saveEvent()">Save Event</button><button class="btn-s" onclick="closeM('m-ev')">Cancel</button>
+</div></div>
 
-<!-- Add Income -->
-<div class="modal-backdrop" id="add-income-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Log Income</div>
-    <div class="form-group"><label>Source</label><input type="text" id="inc-src" placeholder="e.g., Freelance, Part-time, Gift"></div>
-    <div class="form-group"><label>Amount ($)</label><input type="number" id="inc-amt" placeholder="0"></div>
-    <div class="form-group"><label>Date</label><input type="date" id="inc-date"></div>
-    <button class="btn-primary" onclick="saveIncome()">Save Income</button>
-    <button class="btn-secondary" onclick="closeModal('add-income-modal')">Cancel</button>
-  </div>
-</div>
+<div class="modal-bd" id="m-dbt"><div class="modal"><div class="modal-handle"></div><div class="modal-ttl">Add Debt</div>
+  <div class="fg"><label>Lender / Name</label><input type="text" id="dn" placeholder="e.g., Citibank Credit Card"></div>
+  <div class="fg"><label>Amount Owed ($)</label><input type="number" id="da" placeholder="0"></div>
+  <div class="fg"><label>Interest Rate (% APR)</label><input type="number" id="di" placeholder="0" step="0.1"></div>
+  <div class="fg"><label>Min Monthly Payment ($)</label><input type="number" id="dm" placeholder="0"></div>
+  <button class="btn-p" onclick="saveDebt()">Add Debt</button><button class="btn-s" onclick="closeM('m-dbt')">Cancel</button>
+</div></div>
 
-<!-- Add Expense -->
-<div class="modal-backdrop" id="add-expense-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Log Expense</div>
-    <div class="form-group"><label>Description</label><input type="text" id="exp-desc" placeholder="e.g., Groceries, Rent, Transport"></div>
-    <div class="form-group"><label>Amount ($)</label><input type="number" id="exp-amt" placeholder="0"></div>
-    <div class="form-group"><label>Date</label><input type="date" id="exp-date"></div>
-    <button class="btn-primary" onclick="saveExpense()">Save Expense</button>
-    <button class="btn-secondary" onclick="closeModal('add-expense-modal')">Cancel</button>
-  </div>
-</div>
+<div class="modal-bd" id="m-inc"><div class="modal"><div class="modal-handle"></div><div class="modal-ttl">Log Income</div>
+  <div class="fg"><label>Source</label><input type="text" id="is" placeholder="e.g., Freelance, Part-time, Gift"></div>
+  <div class="fg"><label>Amount ($)</label><input type="number" id="ia" placeholder="0"></div>
+  <div class="fg"><label>Date</label><input type="date" id="id"></div>
+  <button class="btn-p" onclick="saveIncome()">Save</button><button class="btn-s" onclick="closeM('m-inc')">Cancel</button>
+</div></div>
 
-<!-- Level Up Overlay -->
-<div id="levelup-overlay">
-  <div class="lu-emoji">⚔️</div>
-  <div class="lu-title">LEVEL UP!</div>
-  <div class="lu-sub" id="lu-sub">You are now a Grinder</div>
-  <button class="btn-primary" style="width:auto;padding:14px 48px" onclick="document.getElementById('levelup-overlay').classList.remove('show')">Let's go! 🔥</button>
-</div>
+<div class="modal-bd" id="m-exp"><div class="modal"><div class="modal-handle"></div><div class="modal-ttl">Log Expense</div>
+  <div class="fg"><label>Description</label><input type="text" id="ed" placeholder="e.g., Groceries, Rent, Transport"></div>
+  <div class="fg"><label>Amount ($)</label><input type="number" id="ea" placeholder="0"></div>
+  <div class="fg"><label>Date</label><input type="date" id="edt"></div>
+  <button class="btn-p" onclick="saveExpense()">Save</button><button class="btn-s" onclick="closeM('m-exp')">Cancel</button>
+</div></div>
 
-<!-- Toast -->
+<div id="lu"><div class="lu-e">⚔️</div><div class="lu-t">LEVEL UP!</div><div class="lu-s" id="lu-s">You are now a Grinder</div><button class="btn-p" style="width:auto;padding:14px 48px" onclick="$('lu').classList.remove('show')">Let's go! 🔥</button></div>
 <div id="toast"></div>
 
 <script>
 // ============================================================
-//  FIREBASE CONFIG
+//  WORKER URL — paste your Cloudflare Worker URL here
+// ============================================================
+const WORKER_URL = 'https://lifeos.subhashbudati1998.workers.dev/';
+
+// ============================================================
+//  FIREBASE
 // ============================================================
 const firebaseConfig = {
   apiKey:            "AIzaSyCb0-gq1GuCPuRofHJP5jsT7dzejkQUiY4",
@@ -610,70 +525,64 @@ const storage = (typeof firebase.storage === 'function') ? firebase.storage() : 
 // ============================================================
 //  STATE
 // ============================================================
-let uid = null;
-let udata = {}; // xp, streak, lastActiveDate, achievements, level
-let debts = [], incomes = [], expenses = [], scheduleEvents = [];
-let measurements = [], habits = {}, selfies = [], visionImgs = [], codingGoals = [];
+let uid = null, udata = {};
+let debts=[], incomes=[], expenses=[], schedEvts=[], measures=[];
+let habits={}, selfies=[], visionImgs=[], codingGoals=[];
+let chatHistory = []; // in-memory only
 
 // ============================================================
 //  CONSTANTS
 // ============================================================
-const LEVELS = [
-  { name:'Rookie',  xp:0    },
-  { name:'Grinder', xp:200  },
-  { name:'Warrior', xp:600  },
-  { name:'Beast',   xp:1200 },
-  { name:'Legend',  xp:2000 },
-];
+const LEVELS = [{name:'Rookie',xp:0},{name:'Grinder',xp:200},{name:'Warrior',xp:600},{name:'Beast',xp:1200},{name:'Legend',xp:2000}];
 const HABITS = [
-  { id:'workout', label:'Workout (gym or home)',      xp:20 },
-  { id:'water',   label:'Drink 2L water',             xp:10 },
-  { id:'meals',   label:'Ate on plan (2,400 kcal)',   xp:15 },
-  { id:'coding',  label:'Study coding (1hr+)',         xp:20 },
-  { id:'sleep',   label:'Sleep before midnight',       xp:10 },
-  { id:'steps',   label:'10,000 steps walked',        xp:15 },
+  {id:'workout',label:'Workout (gym or home)',xp:20},
+  {id:'water',  label:'Drink 2L water',       xp:10},
+  {id:'meals',  label:'Ate on plan (2,400 kcal)',xp:15},
+  {id:'coding', label:'Study coding (1hr+)',   xp:20},
+  {id:'sleep',  label:'Sleep before midnight', xp:10},
+  {id:'steps',  label:'10,000 steps walked',  xp:15},
 ];
 const ACHIEVEMENTS = [
-  { id:'first_login',   icon:'🌟', name:'First Step'  },
-  { id:'streak_3',      icon:'🔥', name:'3-Day Fire'  },
-  { id:'streak_7',      icon:'⚡', name:'Week Warrior'},
-  { id:'streak_30',     icon:'💎', name:'Diamond'     },
-  { id:'first_workout', icon:'💪', name:'First Sweat' },
-  { id:'first_debt',    icon:'💳', name:'Debt Aware'  },
-  { id:'debt_paid',     icon:'🎉', name:'Debt Slayer' },
-  { id:'selfie_7',      icon:'📸', name:'Consistent'  },
-  { id:'weight_5kg',    icon:'⚖️', name:'First 5kg'  },
-  { id:'perfect_day',   icon:'👑', name:'Perfect Day' },
-  { id:'level_2',       icon:'🗡️', name:'Grinder'   },
-  { id:'level_3',       icon:'⚔️', name:'Warrior'   },
-  { id:'level_4',       icon:'🦁', name:'Beast'      },
-  { id:'level_5',       icon:'🏆', name:'Legend'     },
+  {id:'first_login',  icon:'🌟',name:'First Step'  },
+  {id:'streak_3',     icon:'🔥',name:'3-Day Fire'  },
+  {id:'streak_7',     icon:'⚡',name:'Week Warrior' },
+  {id:'streak_30',    icon:'💎',name:'Diamond'      },
+  {id:'first_workout',icon:'💪',name:'First Sweat'  },
+  {id:'first_debt',   icon:'💳',name:'Debt Aware'   },
+  {id:'debt_paid',    icon:'🎉',name:'Debt Slayer'  },
+  {id:'selfie_7',     icon:'📸',name:'Consistent'   },
+  {id:'weight_5kg',   icon:'⚖️',name:'First 5kg'   },
+  {id:'perfect_day',  icon:'👑',name:'Perfect Day'  },
+  {id:'level_2',      icon:'🗡️',name:'Grinder'     },
+  {id:'level_3',      icon:'⚔️',name:'Warrior'     },
+  {id:'level_4',      icon:'🦁',name:'Beast'        },
+  {id:'level_5',      icon:'🏆',name:'Legend'       },
 ];
 const CODING_PHASES = [
-  { id:'p1', name:'HTML & CSS basics',       detail:'freeCodeCamp — Responsive Web Design' },
-  { id:'p2', name:'JavaScript fundamentals', detail:'freeCodeCamp — JS Algorithms & DS' },
-  { id:'p3', name:'Build 3 projects',        detail:'To-do app, calculator, weather app' },
-  { id:'p4', name:'React basics',            detail:'Scrimba React course (free)' },
-  { id:'p5', name:'Node.js & APIs',          detail:'The Odin Project — Backend' },
-  { id:'p6', name:'Databases (SQL)',          detail:'SQLBolt + CS50 SQL week' },
-  { id:'p7', name:'Job prep & LeetCode',      detail:'Blind 75 + resume writing' },
-  { id:'p8', name:'Apply to 50 jobs',         detail:'Entry-level SWE roles in Bay Area' },
+  {id:'p1',name:'HTML & CSS basics',      detail:'freeCodeCamp — Responsive Web Design'},
+  {id:'p2',name:'JavaScript fundamentals',detail:'freeCodeCamp — JS Algorithms & DS'},
+  {id:'p3',name:'Build 3 projects',       detail:'To-do app, calculator, weather app'},
+  {id:'p4',name:'React basics',           detail:'Scrimba React course (free)'},
+  {id:'p5',name:'Node.js & APIs',         detail:'The Odin Project — Backend'},
+  {id:'p6',name:'Databases (SQL)',         detail:'SQLBolt + CS50 SQL week'},
+  {id:'p7',name:'Job prep & LeetCode',    detail:'Blind 75 + resume writing'},
+  {id:'p8',name:'Apply to 50 jobs',       detail:'Entry-level SWE roles in Bay Area'},
 ];
-const DEFAULT_SCHEDULE = [
-  { id:'s1',  time:'06:30', name:'Wake up & morning routine',       type:'study'   },
-  { id:'s2',  time:'07:00', name:'Breakfast (oats + eggs)',         type:'meal'    },
-  { id:'s3',  time:'07:30', name:'Study / Coding (1hr)',            type:'study'   },
-  { id:'s4',  time:'09:00', name:'Commute to college (EV bike)',    type:'commute' },
-  { id:'s5',  time:'10:00', name:'Morning class starts',            type:'class'   },
-  { id:'s6',  time:'13:00', name:'Lunch break',                     type:'meal'    },
-  { id:'s7',  time:'14:30', name:'Morning class ends',              type:'class'   },
-  { id:'s8',  time:'15:00', name:'Gym / Home workout (45 min)',     type:'workout' },
-  { id:'s9',  time:'16:00', name:'Cook & eat early dinner',         type:'meal'    },
-  { id:'s10', time:'17:15', name:'Commute to evening class',        type:'commute' },
-  { id:'s11', time:'17:30', name:'Evening class starts',            type:'class'   },
-  { id:'s12', time:'22:00', name:'Evening class ends',              type:'class'   },
-  { id:'s13', time:'22:30', name:'Home — buttermilk or curd only', type:'meal'    },
-  { id:'s14', time:'23:00', name:'Wind down + sleep prep',          type:'study'   },
+const DEFAULT_SCHED = [
+  {id:'s1', time:'06:30',name:'Wake up & morning routine',      type:'study'},
+  {id:'s2', time:'07:00',name:'Breakfast (oats + eggs)',         type:'meal'},
+  {id:'s3', time:'07:30',name:'Study / Coding (1hr)',            type:'study'},
+  {id:'s4', time:'09:00',name:'Commute to college (EV bike)',    type:'commute'},
+  {id:'s5', time:'10:00',name:'Morning class starts',            type:'class'},
+  {id:'s6', time:'13:00',name:'Lunch break',                     type:'meal'},
+  {id:'s7', time:'14:30',name:'Morning class ends',              type:'class'},
+  {id:'s8', time:'15:00',name:'Gym / Home workout (45 min)',     type:'workout'},
+  {id:'s9', time:'16:00',name:'Cook & eat early dinner',         type:'meal'},
+  {id:'s10',time:'17:15',name:'Commute to evening class',        type:'commute'},
+  {id:'s11',time:'17:30',name:'Evening class starts',            type:'class'},
+  {id:'s12',time:'22:00',name:'Evening class ends',              type:'class'},
+  {id:'s13',time:'22:30',name:'Home — buttermilk or curd only', type:'meal'},
+  {id:'s14',time:'23:00',name:'Wind down + sleep prep',          type:'study'},
 ];
 const QUOTES = [
   "The man who moves a mountain begins by carrying away small stones.",
@@ -681,20 +590,244 @@ const QUOTES = [
   "Every rupee saved is a vote for the life you want.",
   "130kg to jacked starts with today's workout.",
   "Broke at 28 is temporary. Disciplined at 28 is a superpower.",
-  "The debt doesn't care about your feelings. Neither should you.",
+  "The debt doesn't care about your feelings. Pay it anyway.",
   "Small daily improvements lead to stunning long-term results.",
   "Show up when you don't feel like it. That's where legends are made.",
 ];
-const S_WEIGHT = 130, G_WEIGHT = 85;
+const SW = 130, GW = 85;
 
 // ============================================================
 //  HELPERS
 // ============================================================
+const $ = id => document.getElementById(id);
 const todayKey = () => new Date().toISOString().slice(0,10);
-const $  = id  => document.getElementById(id);
-const fc = n   => '$' + Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
-const fmtTime = t => { const [h,m] = t.split(':').map(Number); return (h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM'); };
-const calcAge = () => { const d = new Date(1998,7,27); const n = new Date(); let a = n.getFullYear()-d.getFullYear(); if(n < new Date(n.getFullYear(),7,27)) a--; return a; };
+const fc = n => '$' + Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const fmtT = t => { const [h,m]=t.split(':').map(Number); return (h%12||12)+':'+(m<10?'0':'')+m+' '+(h>=12?'PM':'AM'); };
+const calcAge = () => { const d=new Date(1998,7,27),n=new Date(); let a=n.getFullYear()-d.getFullYear(); if(n<new Date(n.getFullYear(),7,27))a--; return a; };
+
+// ============================================================
+//  AI CALL
+// ============================================================
+async function callAI(system, messages) {
+  if (!WORKER_URL || WORKER_URL === 'https://lifeos.subhashbudati1998.workers.dev/') {
+    throw new Error('Worker URL not set — follow PHASE2_SETUP.md');
+  }
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({system, messages})
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.content[0].text;
+}
+
+function buildProfile() {
+  const xp = udata.xp||0;
+  const str= udata.streak||0;
+  const lv = getLevel(xp).name;
+  const incT = incomes.reduce((s,i)=>s+(i.amount||0),0);
+  const expT = expenses.reduce((s,e)=>s+(e.amount||0),0);
+  const bal  = incT - expT;
+  const dbtT = debts.reduce((s,d)=>s+(d.amount||0),0);
+  const minP = debts.reduce((s,d)=>s+(d.minPayment||0),0);
+  const curW = measures.length ? measures[0].weight : SW;
+  const hDone = HABITS.filter(h=>habits[h.id]).length;
+  return {xp,str,lv,bal,dbtT,minP,curW,hDone};
+}
+
+// ============================================================
+//  AI COACH CHAT
+// ============================================================
+function coachSystem() {
+  const p = buildProfile();
+  return `You are LifeOS Coach — Subhash's strict but caring personal advisor. You know everything about him:
+- 28 years old (DOB Aug 27 1998), based in Sunnyvale CA
+- Student: classes Mon-Fri 10AM-2:30PM and 5:30-10PM, 20-25 min EV bike commute
+- Starting weight: 130kg, current: ${p.curW}kg, goal: 85kg, 6ft tall
+- Diet: South Indian / Telangana food, cooks own meals, target 2,400 kcal/day
+- Has 6+ debts (total $${p.dbtT}), irregular income, wants financial independence
+- Learning to code from scratch, goal: software engineering job in Bay Area
+- Current XP: ${p.xp} | Level: ${p.lv} | Streak: ${p.str} days
+- Balance: ${fc(p.bal)} | Total debt: ${fc(p.dbtT)} | Min payments: ${fc(p.minP)}/mo
+- Today's habits: ${p.hDone}/6 done
+
+Rules: Be direct, tough but caring. No fluff. Keep replies under 120 words unless asked for detail. Use line breaks for readability. Don't use markdown headers or bullet points — write naturally.`;
+}
+
+async function sendChat() {
+  const input = $('chat-in');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  appendBubble(msg, 'user');
+  chatHistory.push({role:'user',content:msg});
+
+  const sendBtn = $('chat-send');
+  sendBtn.disabled = true;
+
+  const typing = appendTyping();
+
+  try {
+    const reply = await callAI(coachSystem(), chatHistory);
+    typing.remove();
+    appendBubble(reply, 'ai');
+    chatHistory.push({role:'assistant',content:reply});
+    // Keep last 20 messages to control cost
+    if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+  } catch(e) {
+    typing.remove();
+    appendBubble('Coach unavailable — ' + (e.message.includes('Worker URL') ? 'follow PHASE2_SETUP.md to activate AI.' : e.message), 'sys');
+  }
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+function sendChip(text) { $('chat-in').value = text; sendChat(); }
+
+function appendBubble(text, type) {
+  const msgs = $('chat-msgs');
+  const div  = document.createElement('div');
+  div.className = 'chat-bubble bubble-' + type;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const msgs = $('chat-msgs');
+  const div  = document.createElement('div');
+  div.className = 'chat-bubble bubble-ai';
+  div.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+// ============================================================
+//  AFFORDABILITY CHECKER
+// ============================================================
+async function checkAffordability() {
+  const item = $('afford-item').value.trim();
+  if (!item) { toast('Describe what you want to buy'); return; }
+
+  const btn = $('afford-btn');
+  const res = $('afford-res');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing…';
+  res.style.display = 'none';
+
+  try {
+    const p = buildProfile();
+    const system = `You are a strict financial advisor for Subhash, a 28yo student in Sunnyvale CA.
+His finances RIGHT NOW:
+- Current balance: ${fc(p.bal)}
+- Monthly minimum debt payments: ${fc(p.minP)}
+- Total debt: ${fc(p.dbtT)}
+- Estimated fixed monthly costs (rent + food in Sunnyvale): ~$1,800
+- Income is irregular — no guaranteed paycheck
+
+Analyze the purchase request. Start your response with exactly one word: YES, NO, or MAYBE (all caps). Then on the next line explain in 2-3 direct sentences. Be honest — if it will strain him, say so plainly.`;
+
+    const reply = await callAI(system, [{role:'user',content:'Can I afford: ' + item}]);
+
+    res.style.display = 'block';
+    const firstWord = reply.split(/[\s\n]/)[0].toUpperCase();
+    let hdrClass = 'afford-maybe', verdict = firstWord;
+    if (firstWord === 'YES')  hdrClass = 'afford-yes';
+    if (firstWord === 'NO')   hdrClass = 'afford-no';
+
+    const rest = reply.replace(/^(YES|NO|MAYBE)[^\n]*/i,'').trim();
+    res.innerHTML = `<div class="${hdrClass}">${verdict}</div><div style="color:var(--tx2)">${rest}</div>`;
+  } catch(e) {
+    res.style.display = 'block';
+    res.innerHTML = '<div style="color:var(--tx3)">AI unavailable — follow PHASE2_SETUP.md to activate.</div>';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Can I Afford It? →';
+}
+
+// ============================================================
+//  MEAL PLANNER
+// ============================================================
+async function getMealSuggestions() {
+  const ingredients = $('meal-ingredients').value.trim();
+  if (!ingredients) { toast('List your ingredients first'); return; }
+
+  const btn = $('meal-btn');
+  const res = $('meal-res');
+  btn.disabled = true;
+  btn.textContent = 'Thinking…';
+  res.style.display = 'none';
+
+  try {
+    const curW = measures.length ? measures[0].weight : SW;
+    const hDone = HABITS.filter(h=>habits[h.id]).length;
+
+    const system = `You are a nutritionist and Telangana/Andhra cuisine expert.
+Subhash is on a fat-loss diet: target 2,400 kcal/day, high protein, South Indian / Telangana style food.
+Current weight: ${curW}kg, goal: 85kg.
+
+Suggest exactly 2 meals he can make right now using primarily what he has. For each meal:
+1. Name
+2. Main ingredients used (from his list)
+3. Approximate calories
+4. Cooking steps in 3 lines max
+
+Keep it practical, no exotic ingredients, no markdown headers. Total response under 200 words.`;
+
+    const reply = await callAI(system, [{role:'user',content:'Ingredients I have: ' + ingredients}]);
+    res.style.display = 'block';
+    res.textContent = reply;
+  } catch(e) {
+    res.style.display = 'block';
+    res.textContent = 'AI unavailable — follow PHASE2_SETUP.md to activate.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Suggest Meals →';
+}
+
+// ============================================================
+//  AI SCHEDULE HELPER
+// ============================================================
+async function askSchedAI() {
+  const request = $('sched-ai-input').value.trim();
+  if (!request) { toast('Describe the change you want'); return; }
+
+  const btn = $('sched-ai-btn');
+  const res = $('sched-ai-res');
+  btn.disabled = true;
+  btn.textContent = 'Reworking…';
+  res.style.display = 'none';
+
+  try {
+    const schedSummary = schedEvts.map(e => fmtT(e.time) + ' — ' + e.name).join('\n');
+    const system = `You are a schedule optimizer for Subhash.
+FIXED blocks that cannot change:
+- Classes: Mon-Fri 10AM-2:30PM and 5:30-10PM
+- Commute: 25 min EV bike before and after each class block
+Daily goals to fit: workout 45min, study coding 1hr, cook 2 meals, sleep 8hrs, drink 2L water.
+
+Current schedule:
+${schedSummary}
+
+His request: "${request}"
+
+Output a practical updated time-block schedule for tomorrow or the specified day. Format: "TIME — activity". Be concise, 150 words max.`;
+
+    const reply = await callAI(system, [{role:'user',content:request}]);
+    res.style.display = 'block';
+    res.textContent = reply;
+  } catch(e) {
+    res.style.display = 'block';
+    res.textContent = 'AI unavailable — follow PHASE2_SETUP.md to activate.';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Rework My Schedule →';
+}
 
 // ============================================================
 //  AUTH
@@ -709,15 +842,8 @@ function signIn() {
 }
 
 auth.onAuthStateChanged(user => {
-  if (user) {
-    uid = user.uid;
-    $('login-screen').style.display = 'none';
-    $('app').classList.add('active');
-    init();
-  } else {
-    $('login-screen').style.display = 'flex';
-    $('app').classList.remove('active');
-  }
+  if (user) { uid = user.uid; $('login-screen').style.display='none'; $('app').classList.add('active'); init(); }
+  else { $('login-screen').style.display='flex'; $('app').classList.remove('active'); }
 });
 
 // ============================================================
@@ -725,117 +851,69 @@ auth.onAuthStateChanged(user => {
 // ============================================================
 function init() {
   setupGreeting();
-  $('age-display').textContent = calcAge();
+  $('age-d').textContent = calcAge();
   const today = todayKey();
-  $('inc-date').value = today;
-  $('exp-date').value = today;
-
-  loadUserData();
-  loadHabits();
-  loadDebts();
-  loadIncome();
-  loadExpenses();
-  loadSchedule();
-  loadMeasurements();
-  loadCodingGoals();
-  loadSelfies();
-  loadVisionImgs();
-
+  $('id').value = today; $('edt').value = today;
+  loadUD(); loadHabits(); loadDebts(); loadIncome(); loadExpenses();
+  loadSchedule(); loadMeasures(); loadCoding(); loadSelfies(); loadVision();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   if ('Notification' in window) Notification.requestPermission();
 }
 
-// ============================================================
-//  GREETING
-// ============================================================
 function setupGreeting() {
   const h = new Date().getHours();
-  const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Late-night grind';
-  const emoji = h < 12 ? '🌅' : h < 17 ? '☀️' : '🌙';
-  $('home-greeting').textContent  = g + ' 👋';
-  $('mg-greeting').textContent    = g + ', Subhash ' + emoji;
-  $('mg-date').textContent        = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  $('sched-day-lbl').textContent  = 'Today — ' + new Date().toLocaleDateString('en-US',{weekday:'long'});
-  $('mg-quote').textContent       = '"' + QUOTES[new Date().getDate() % QUOTES.length] + '"';
-  $('morning-card').style.display = h < 13 ? 'block' : 'none';
+  const g = h<12?'Good morning':h<17?'Good afternoon':h<22?'Good evening':'Late-night grind';
+  const e = h<12?'🌅':h<17?'☀️':'🌙';
+  $('home-g').textContent = g+' 👋';
+  $('mg-g').textContent = g+', Subhash '+e;
+  $('mg-d').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  $('sched-day-lbl').textContent = 'Today — '+new Date().toLocaleDateString('en-US',{weekday:'long'});
+  $('mg-q').textContent = '"'+QUOTES[new Date().getDate()%QUOTES.length]+'"';
+  $('morning-card').style.display = h<13?'block':'none';
 }
 
 // ============================================================
-//  USER DATA / XP / STREAK
+//  USER DATA
 // ============================================================
-function loadUserData() {
+function loadUD() {
   db.collection('users').doc(uid).collection('settings').doc('main')
     .onSnapshot(snap => {
-      if (snap.exists) {
-        udata = snap.data();
-      } else {
-        udata = { xp:0, streak:0, lastActiveDate:'', achievements:['first_login'], level:1 };
-        saveUD();
-      }
-      checkStreak();
-      renderXP();
-      renderAch();
+      udata = snap.exists ? snap.data() : {xp:0,streak:0,lastActiveDate:'',achievements:['first_login'],level:1};
+      if (!snap.exists) saveUD();
+      checkStreak(); renderXP(); renderAch();
     });
 }
-
-const saveUD = () => db.collection('users').doc(uid).collection('settings').doc('main').set(udata, {merge:true});
+const saveUD = () => db.collection('users').doc(uid).collection('settings').doc('main').set(udata,{merge:true});
 
 async function addXP(amount, reason) {
-  const prev = getLevel(udata.xp || 0);
-  udata.xp = (udata.xp || 0) + amount;
-  const cur = getLevel(udata.xp);
-  await saveUD();
-  renderXP();
-  showToast('+' + amount + ' XP — ' + reason);
-  if (cur.name !== prev.name) {
-    $('lu-sub').textContent = 'You are now a ' + cur.name;
-    $('levelup-overlay').classList.add('show');
-    const li = LEVELS.indexOf(cur) + 1;
-    unlock('level_' + li);
-  }
+  const prev = getLevel(udata.xp||0);
+  udata.xp = (udata.xp||0)+amount;
+  const cur  = getLevel(udata.xp);
+  await saveUD(); renderXP();
+  toast('+'+amount+' XP — '+reason);
+  if (cur.name !== prev.name) { $('lu-s').textContent='You are now a '+cur.name; $('lu').classList.add('show'); unlock('level_'+(LEVELS.indexOf(cur)+1)); }
 }
-
-function getLevel(xp) {
-  let lv = LEVELS[0];
-  LEVELS.forEach(l => { if (xp >= l.xp) lv = l; });
-  return lv;
-}
+const getLevel = xp => { let l=LEVELS[0]; LEVELS.forEach(x=>{ if(xp>=x.xp)l=x; }); return l; };
 
 function renderXP() {
-  const xp  = udata.xp || 0;
-  const str = udata.streak || 0;
-  const lv  = getLevel(xp);
-  const li  = LEVELS.indexOf(lv);
-  const next = LEVELS[li + 1];
-
-  $('xp-display').textContent    = xp;
-  $('streak-display').textContent = '🔥 ' + str;
-  $('level-num').textContent     = li + 1;
-  $('level-name').textContent    = lv.name;
-
-  let pct = 100, lbl = 'MAX LEVEL';
-  if (next) {
-    pct = Math.round(((xp - lv.xp) / (next.xp - lv.xp)) * 100);
-    lbl = (xp - lv.xp) + ' / ' + (next.xp - lv.xp) + ' XP';
-  }
-  $('xp-bar').style.width = pct + '%';
-  $('xp-lbl').textContent = lbl;
-
-  updateIdealScore();
+  const xp=udata.xp||0, str=udata.streak||0, lv=getLevel(xp), li=LEVELS.indexOf(lv), nx=LEVELS[li+1];
+  $('xp-d').textContent=xp; $('str-d').textContent='🔥 '+str; $('lv-n').textContent=li+1; $('lv-name').textContent=lv.name;
+  let pct=100,lbl='MAX LEVEL';
+  if(nx){ pct=Math.round(((xp-lv.xp)/(nx.xp-lv.xp))*100); lbl=(xp-lv.xp)+' / '+(nx.xp-lv.xp)+' XP'; }
+  $('xp-bar').style.width=pct+'%'; $('xp-lbl').textContent=lbl;
+  updateScore();
 }
 
 function checkStreak() {
-  const today = todayKey();
-  const last  = udata.lastActiveDate || '';
-  if (last === today) return;
-  const yest = new Date(); yest.setDate(yest.getDate()-1);
-  const ykey = yest.toISOString().slice(0,10);
-  udata.streak = last === ykey ? (udata.streak || 0) + 1 : 1;
-  udata.lastActiveDate = today;
-  saveUD();
-  if (udata.streak >= 3)  unlock('streak_3');
-  if (udata.streak >= 7)  unlock('streak_7');
-  if (udata.streak >= 30) unlock('streak_30');
+  const today=todayKey(), last=udata.lastActiveDate||'';
+  if(last===today) return;
+  const yest=new Date(); yest.setDate(yest.getDate()-1);
+  const yk=yest.toISOString().slice(0,10);
+  udata.streak = last===yk?(udata.streak||0)+1:1;
+  udata.lastActiveDate=today; saveUD();
+  if(udata.streak>=3)unlock('streak_3');
+  if(udata.streak>=7)unlock('streak_7');
+  if(udata.streak>=30)unlock('streak_30');
 }
 
 // ============================================================
@@ -843,76 +921,62 @@ function checkStreak() {
 // ============================================================
 function loadHabits() {
   db.collection('users').doc(uid).collection('habits').doc(todayKey())
-    .onSnapshot(snap => { habits = snap.exists ? (snap.data().done || {}) : {}; renderHabits(); });
+    .onSnapshot(snap=>{ habits=snap.exists?(snap.data().done||{}):{};renderHabits(); });
 }
-
 function renderHabits() {
-  const done = HABITS.filter(h => habits[h.id]).length;
-  $('habits-done').textContent = done;
-  $('habits-list').innerHTML = HABITS.map(h => `
-    <div class="habit-item" onclick="toggleHabit('${h.id}',${h.xp})">
-      <div class="habit-check ${habits[h.id]?'done':''}"></div>
-      <span class="habit-lbl ${habits[h.id]?'done':''}">${h.label}</span>
-      <span class="habit-xp">+${h.xp}</span>
-    </div>
-  `).join('');
-  if (done === 6) unlock('perfect_day');
-  if (habits['workout']) unlock('first_workout');
-  updateIdealScore();
+  const done=HABITS.filter(h=>habits[h.id]).length;
+  $('hb-done').textContent=done;
+  $('habits-list').innerHTML=HABITS.map(h=>`
+    <div class="habit-item" onclick="toggleH('${h.id}',${h.xp})">
+      <div class="h-check ${habits[h.id]?'done':''}"></div>
+      <span class="h-lbl ${habits[h.id]?'done':''}">${h.label}</span>
+      <span class="h-xp">+${h.xp}</span>
+    </div>`).join('');
+  if(done===6)unlock('perfect_day');
+  if(habits['workout'])unlock('first_workout');
+  updateScore();
 }
-
-async function toggleHabit(id, xp) {
-  const was = habits[id];
-  habits[id] = !was;
+async function toggleH(id,xp) {
+  const was=habits[id]; habits[id]=!was;
   await db.collection('users').doc(uid).collection('habits').doc(todayKey()).set({done:habits},{merge:true});
-  if (!was) await addXP(xp, HABITS.find(h=>h.id===id).label);
+  if(!was) await addXP(xp,HABITS.find(h=>h.id===id).label);
   renderHabits();
 }
 
 // ============================================================
-//  IDEAL MAN SCORE
+//  IDEAL SCORE
 // ============================================================
-function updateIdealScore() {
-  const curW = measurements.length ? measurements[0].weight : S_WEIGHT;
-  const lost = S_WEIGHT - curW;
-  const need = S_WEIGHT - G_WEIGHT;
-
-  const bodyScore    = Math.min(35, Math.max(0, Math.round((lost/need)*35)));
-  const habitsScore  = Math.round((HABITS.filter(h=>habits[h.id]).length/6)*35);
-  const financeScore = Math.min(15, Math.round(((udata.xp||0)/2000)*15));
-  const codeScore    = Math.round((codingGoals.filter(g=>g.done).length/8)*15);
-  const total        = bodyScore + habitsScore + financeScore + codeScore;
-
-  $('sc-body').textContent    = bodyScore    + '%';
-  $('sc-habits').textContent  = habitsScore  + '%';
-  $('sc-finance').textContent = financeScore + '%';
-  $('sc-code').textContent    = codeScore    + '%';
-  $('ideal-pct').textContent  = total        + '%';
-
-  const C = 2 * Math.PI * 62; // circumference
-  $('ideal-ring').style.strokeDasharray  = C;
-  $('ideal-ring').style.strokeDashoffset = C - (total/100)*C;
-
-  // Weight display
-  $('cur-weight').textContent = curW;
-  const lostSafe = Math.max(0, lost);
-  const togo     = Math.max(0, curW - G_WEIGHT);
-  const wpct     = Math.min(100, Math.round((lostSafe/need)*100));
-  $('w-lost').textContent  = lostSafe.toFixed(1);
-  $('w-left').textContent  = togo.toFixed(1);
-  $('weight-pct').textContent = wpct + '%';
-  $('weight-bar').style.width = wpct + '%';
+function updateScore() {
+  const curW = measures.length?measures[0].weight:SW;
+  const lost  = SW-curW, need=SW-GW;
+  const bS    = Math.min(35,Math.max(0,Math.round((lost/need)*35)));
+  const hS    = Math.round((HABITS.filter(h=>habits[h.id]).length/6)*35);
+  const fS    = Math.min(15,Math.round(((udata.xp||0)/2000)*15));
+  const cS    = Math.round((codingGoals.filter(g=>g.done).length/8)*15);
+  const tot   = bS+hS+fS+cS;
+  $('sc-b').textContent=bS+'%'; $('sc-h').textContent=hS+'%';
+  $('sc-f').textContent=fS+'%'; $('sc-c').textContent=cS+'%';
+  $('ideal-pct').textContent=tot+'%';
+  const C=2*Math.PI*62;
+  $('ideal-ring').style.strokeDasharray=C;
+  $('ideal-ring').style.strokeDashoffset=C-(tot/100)*C;
+  // weight
+  $('cur-w').textContent=curW;
+  const lostS=Math.max(0,lost), togo=Math.max(0,curW-GW);
+  const wpct=Math.min(100,Math.round((lostS/need)*100));
+  $('w-lost').textContent=lostS.toFixed(1); $('w-left').textContent=togo.toFixed(1);
+  $('w-pct').textContent=wpct+'%'; $('w-bar').style.width=wpct+'%';
 }
 
 // ============================================================
 //  MOOD
 // ============================================================
 async function setMood(v) {
-  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelector(`[data-mood="${v}"]`).classList.add('selected');
-  $('mood-xp').textContent = 'Logged ✓';
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelector(`[data-mood="${v}"]`).classList.add('sel');
+  $('mood-xp').textContent='Logged ✓';
   await db.collection('users').doc(uid).collection('mood').doc(todayKey()).set({mood:v,ts:new Date().toISOString()});
-  await addXP(5, 'Mood logged');
+  await addXP(5,'Mood logged');
 }
 
 // ============================================================
@@ -920,61 +984,46 @@ async function setMood(v) {
 // ============================================================
 function loadSchedule() {
   db.collection('users').doc(uid).collection('schedule')
-    .onSnapshot(snap => {
-      if (snap.empty) { seedSchedule(); return; }
-      scheduleEvents = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>a.time.localeCompare(b.time));
-      renderSchedule();
-      updateMgPreview();
+    .onSnapshot(snap=>{
+      if(snap.empty){seedSched();return;}
+      schedEvts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.time.localeCompare(b.time));
+      renderSched(); updateMgPreview();
     });
 }
-
-async function seedSchedule() {
-  const batch = db.batch();
-  DEFAULT_SCHEDULE.forEach(e => {
-    const ref = db.collection('users').doc(uid).collection('schedule').doc(e.id);
-    batch.set(ref, {name:e.name,time:e.time,type:e.type,doneDate:''});
-  });
-  await batch.commit();
+async function seedSched() {
+  const b=db.batch();
+  DEFAULT_SCHED.forEach(e=>{ const r=db.collection('users').doc(uid).collection('schedule').doc(e.id); b.set(r,{name:e.name,time:e.time,type:e.type,doneDate:''}); });
+  await b.commit();
 }
-
-function renderSchedule() {
-  const today = todayKey();
-  $('sched-list').innerHTML = scheduleEvents.map(e => `
-    <div class="sched-item">
-      <div class="sched-time">${fmtTime(e.time)}</div>
-      <div class="sched-body">
-        <div class="sched-name" style="${e.doneDate===today?'text-decoration:line-through;color:var(--text3)':''}">${e.name}</div>
-        <span class="sched-tag tag-${e.type}">${e.type}</span>
+function renderSched() {
+  const today=todayKey();
+  $('sched-list').innerHTML=schedEvts.map(e=>`
+    <div class="si">
+      <div class="si-time">${fmtT(e.time)}</div>
+      <div class="si-body">
+        <div class="si-name" style="${e.doneDate===today?'text-decoration:line-through;color:var(--tx3)':''}">${e.name}</div>
+        <span class="si-tag t-${e.type}">${e.type}</span>
       </div>
-      <button class="sched-done-btn ${e.doneDate===today?'done':''}" onclick="markSchedDone('${e.id}','${e.doneDate}')">
+      <button class="si-btn ${e.doneDate===today?'done':''}" onclick="markDone('${e.id}','${e.doneDate}')">
         ${e.doneDate===today?'Done ✓':'Done?'}
       </button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
-
-async function markSchedDone(id, cur) {
-  const today = todayKey();
-  const nd = cur===today ? '' : today;
+async function markDone(id,cur) {
+  const today=todayKey(), nd=cur===today?'':today;
   await db.collection('users').doc(uid).collection('schedule').doc(id).update({doneDate:nd});
-  if (nd===today) await addXP(5,'Schedule task done');
+  if(nd===today) await addXP(5,'Schedule task done');
 }
-
 function updateMgPreview() {
-  const h = new Date().getHours();
-  const upcoming = scheduleEvents.filter(e => parseInt(e.time) >= h).slice(0,3);
-  $('mg-preview').textContent = upcoming.length ? upcoming.map(e=>e.name.split('(')[0].trim()).join(' · ') : 'Enjoy your evening!';
+  const h=new Date().getHours();
+  const up=schedEvts.filter(e=>parseInt(e.time)>=h).slice(0,3);
+  $('mg-p').textContent=up.length?up.map(e=>e.name.split('(')[0].trim()).join(' · '):'Enjoy your evening!';
 }
-
 async function saveEvent() {
-  const name = $('ev-name').value.trim();
-  const time = $('ev-time').value;
-  const type = $('ev-type').value;
-  if (!name || !time) { showToast('Fill in name and time'); return; }
-  await db.collection('users').doc(uid).collection('schedule').add({name,time,type,doneDate:''});
-  closeModal('add-event-modal');
-  $('ev-name').value = '';
-  showToast('Event added!');
+  const n=$('ev-n').value.trim(),t=$('ev-t').value,ty=$('ev-ty').value;
+  if(!n||!t){toast('Fill in name and time');return;}
+  await db.collection('users').doc(uid).collection('schedule').add({name:n,time:t,type:ty,doneDate:''});
+  closeM('m-ev'); $('ev-n').value=''; toast('Event added!');
 }
 
 // ============================================================
@@ -982,313 +1031,194 @@ async function saveEvent() {
 // ============================================================
 function loadDebts() {
   db.collection('users').doc(uid).collection('debts')
-    .onSnapshot(snap => {
-      debts = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.interest||0)-(a.interest||0));
-      renderDebts();
-      updateFin();
+    .onSnapshot(snap=>{
+      debts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.interest||0)-(a.interest||0));
+      renderDebts(); updateFin();
     });
 }
-
 function renderDebts() {
-  const list  = $('debt-list');
-  const empty = $('debt-empty');
-  if (debts.length===0) { list.innerHTML=''; empty.style.display='block'; updateSim(); return; }
-  empty.style.display='none';
-
-  const totalDebt = debts.reduce((s,d)=>s+(d.amount||0),0);
-  $('debt-total').textContent = fc(totalDebt);
-
-  list.innerHTML = debts.map((d,i) => {
-    const orig = d.originalAmount || d.amount;
-    const pct  = orig > 0 ? Math.round((1-d.amount/orig)*100) : 0;
-    return `
-      <div class="debt-item">
-        <div class="flex-between">
-          <div class="debt-name">${d.name}${i===0?' <span class="badge-pill priority">🎯 Pay first</span>':''}</div>
-          <button onclick="markDebtPaid('${d.id}')" style="background:none;border:.5px solid var(--green);color:var(--green);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;flex-shrink:0">Paid off</button>
-        </div>
-        <div class="debt-row" style="margin-top:6px">
-          <div class="debt-amount">${fc(d.amount)}</div>
-          <div class="debt-badges">
-            <span class="badge-pill">${d.interest||0}% APR</span>
-            <span class="badge-pill">Min: ${fc(d.minPayment||0)}/mo</span>
-          </div>
-        </div>
-        <div style="margin-top:8px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Paid off: ${pct}%</div>
-          <div class="bar-bg bar-h6"><div class="bar-fill bar-green" style="width:${pct}%"></div></div>
-        </div>
-      </div>`;
+  const list=$('debt-list'),emp=$('debt-empty');
+  if(!debts.length){list.innerHTML='';emp.style.display='block';updateSim();return;}
+  emp.style.display='none';
+  $('dbt-tot').textContent=fc(debts.reduce((s,d)=>s+(d.amount||0),0));
+  list.innerHTML=debts.map((d,i)=>{
+    const orig=d.originalAmount||d.amount, pct=orig>0?Math.round((1-d.amount/orig)*100):0;
+    return `<div class="debt-item">
+      <div class="fb"><div class="debt-name">${d.name}${i===0?' <span class="pill hot">🎯 Pay first</span>':''}</div>
+      <button onclick="markPaid('${d.id}')" style="background:none;border:.5px solid var(--grn);color:var(--grn);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;flex-shrink:0">Paid off</button></div>
+      <div class="debt-row" style="margin-top:6px"><div class="debt-amt">${fc(d.amount)}</div>
+      <div class="debt-pills"><span class="pill">${d.interest||0}% APR</span><span class="pill">Min: ${fc(d.minPayment||0)}/mo</span></div></div>
+      <div style="margin-top:8px"><div style="font-size:11px;color:var(--tx3);margin-bottom:4px">Paid off: ${pct}%</div>
+      <div class="bar-bg bh6"><div class="bar-fill b-grn" style="width:${pct}%"></div></div></div></div>`;
   }).join('');
-
-  unlock('first_debt');
-  updateSim();
+  unlock('first_debt'); updateSim();
 }
-
-async function markDebtPaid(id) {
-  if (!confirm('Mark this debt as fully paid off? This cannot be undone.')) return;
+async function markPaid(id) {
+  if(!confirm('Mark this debt as fully paid off?')) return;
   await db.collection('users').doc(uid).collection('debts').doc(id).delete();
-  await addXP(200, 'Debt eliminated! 🎉');
-  unlock('debt_paid');
+  await addXP(200,'Debt eliminated! 🎉'); unlock('debt_paid');
 }
-
 async function saveDebt() {
-  const name = $('d-name').value.trim();
-  const amount = parseFloat($('d-amount').value)||0;
-  const interest = parseFloat($('d-interest').value)||0;
-  const minPayment = parseFloat($('d-min').value)||0;
-  if (!name||amount<=0) { showToast('Enter name and amount'); return; }
-  await db.collection('users').doc(uid).collection('debts').add({name,amount,originalAmount:amount,interest,minPayment,addedDate:todayKey()});
-  closeModal('add-debt-modal');
-  ['d-name','d-amount','d-interest','d-min'].forEach(id=>$(id).value='');
-  showToast('Debt added');
+  const n=$('dn').value.trim(),a=parseFloat($('da').value)||0,i=parseFloat($('di').value)||0,m=parseFloat($('dm').value)||0;
+  if(!n||a<=0){toast('Enter name and amount');return;}
+  await db.collection('users').doc(uid).collection('debts').add({name:n,amount:a,originalAmount:a,interest:i,minPayment:m,addedDate:todayKey()});
+  closeM('m-dbt'); ['dn','da','di','dm'].forEach(x=>$(x).value=''); toast('Debt added');
 }
-
-// ============================================================
-//  SIMULATOR
-// ============================================================
 function updateSim() {
-  const extra = parseInt($('sim-slider').value);
-  $('sim-val').textContent = '$' + extra + ' / month extra';
-  const res = $('sim-result');
-  if (!debts.length) {
-    res.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:14px">Add your debts above to run the simulation.</div>';
-    return;
-  }
-  const totalDebt = debts.reduce((s,d)=>s+d.amount,0);
-  const totalMin  = debts.reduce((s,d)=>s+(d.minPayment||0),0);
-  const monthly   = totalMin + extra;
-  if (monthly <= 0) { res.innerHTML='<div style="text-align:center;color:var(--text3)">Set a payment amount.</div>'; return; }
-  const avgRate = (debts.reduce((s,d)=>s+(d.interest||0),0)/debts.length)/100/12;
-  let months=0, bal=totalDebt;
-  while(bal>0&&months<600){ bal=bal*(1+avgRate)-monthly; months++; }
-  const yrs = Math.floor(months/12), remM = months%12;
-  const timeStr = yrs>0?`${yrs}y ${remM}mo`:`${months} months`;
-  const totalPaid = monthly*months;
-  const interest  = totalPaid-totalDebt;
-  res.innerHTML = `
-    <div style="text-align:center;margin-bottom:10px">
-      <div style="font-size:13px;color:var(--text2);margin-bottom:4px">Debt-free in</div>
-      <div class="sim-big">${timeStr}</div>
-    </div>
-    <div class="flex-between" style="font-size:13px;padding-top:8px;border-top:.5px solid var(--border)">
-      <span style="color:var(--text2)">Monthly payment</span><span style="font-weight:600;color:var(--green)">${fc(monthly)}</span>
-    </div>
-    <div class="flex-between" style="font-size:13px;margin-top:6px">
-      <span style="color:var(--text2)">Total paid</span><span style="font-weight:600">${fc(Math.round(totalPaid))}</span>
-    </div>
-    <div class="flex-between" style="font-size:13px;margin-top:6px">
-      <span style="color:var(--text2)">Interest paid</span><span style="font-weight:600;color:var(--red)">${fc(Math.round(interest))}</span>
-    </div>`;
+  const ex=parseInt($('sim-sl').value);
+  $('sim-val').textContent='$'+ex+' / month extra';
+  const res=$('sim-res');
+  if(!debts.length){res.innerHTML='<div style="text-align:center;color:var(--tx3);font-size:14px">Add your debts above to run the simulation.</div>';return;}
+  const tot=debts.reduce((s,d)=>s+d.amount,0), mn=debts.reduce((s,d)=>s+(d.minPayment||0),0), pay=mn+ex;
+  if(!pay){res.innerHTML='<div style="text-align:center;color:var(--tx3)">Set a payment above.</div>';return;}
+  const rate=(debts.reduce((s,d)=>s+(d.interest||0),0)/debts.length)/100/12;
+  let mo=0,bal=tot; while(bal>0&&mo<600){bal=bal*(1+rate)-pay;mo++;}
+  const yrs=Math.floor(mo/12),remM=mo%12, tStr=yrs>0?`${yrs}y ${remM}mo`:`${mo} months`;
+  const tp=pay*mo, intr=tp-tot;
+  res.innerHTML=`<div style="text-align:center;margin-bottom:10px"><div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Debt-free in</div><div class="sim-big">${tStr}</div></div>
+  <div class="fb" style="font-size:13px;padding-top:8px;border-top:.5px solid var(--bd)"><span style="color:var(--tx2)">Monthly payment</span><span style="font-weight:600;color:var(--grn)">${fc(pay)}</span></div>
+  <div class="fb" style="font-size:13px;margin-top:6px"><span style="color:var(--tx2)">Total paid</span><span style="font-weight:600">${fc(Math.round(tp))}</span></div>
+  <div class="fb" style="font-size:13px;margin-top:6px"><span style="color:var(--tx2)">Interest paid</span><span style="font-weight:600;color:var(--red)">${fc(Math.round(intr))}</span></div>`;
 }
 
 // ============================================================
 //  INCOME / EXPENSES
 // ============================================================
 function loadIncome() {
-  db.collection('users').doc(uid).collection('income')
-    .onSnapshot(snap => {
-      incomes = snap.docs.map(d=>({id:d.id,...d.data()}));
-      incomes.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-      renderIncome(); updateFin();
-    });
+  db.collection('users').doc(uid).collection('income').onSnapshot(snap=>{
+    incomes=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    renderInc(); updateFin();
+  });
 }
 function loadExpenses() {
-  db.collection('users').doc(uid).collection('expenses')
-    .onSnapshot(snap => {
-      expenses = snap.docs.map(d=>({id:d.id,...d.data()}));
-      updateFin();
-    });
+  db.collection('users').doc(uid).collection('expenses').onSnapshot(snap=>{
+    expenses=snap.docs.map(d=>({id:d.id,...d.data()})); updateFin();
+  });
 }
-
 function updateFin() {
-  const incT = incomes.reduce((s,i)=>s+(i.amount||0),0);
-  const expT = expenses.reduce((s,e)=>s+(e.amount||0),0);
-  const bal  = incT - expT;
-  $('inc-total').textContent = fc(incT);
-  $('exp-total').textContent = fc(expT);
-  $('balance-display').textContent = (bal<0?'-':'')+fc(bal);
-  $('balance-display').style.color = bal<0?'var(--red)':'var(--text)';
+  const it=incomes.reduce((s,i)=>s+(i.amount||0),0), et=expenses.reduce((s,e)=>s+(e.amount||0),0), b=it-et;
+  $('inc-tot').textContent=fc(it); $('exp-tot').textContent=fc(et);
+  $('bal-d').textContent=(b<0?'-':'')+fc(b); $('bal-d').style.color=b<0?'var(--red)':'var(--tx)';
 }
-
-function renderIncome() {
-  const list  = $('income-list');
-  const empty = $('income-empty');
-  if (!incomes.length) { empty.style.display='block'; list.innerHTML=''; return; }
-  empty.style.display='none';
-  list.innerHTML = incomes.slice(0,8).map(i=>`
-    <div class="flex-between" style="padding:10px 0;border-bottom:.5px solid var(--border)">
-      <div>
-        <div style="font-size:14px;font-weight:500">${i.source}</div>
-        <div style="font-size:12px;color:var(--text3)">${i.date||''}</div>
-      </div>
-      <div style="font-size:18px;font-weight:700;color:var(--green)">+${fc(i.amount)}</div>
+function renderInc() {
+  const l=$('inc-list'),e=$('inc-empty');
+  if(!incomes.length){e.style.display='block';l.innerHTML='';return;}
+  e.style.display='none';
+  l.innerHTML=incomes.slice(0,8).map(i=>`
+    <div class="fb" style="padding:10px 0;border-bottom:.5px solid var(--bd)">
+      <div><div style="font-size:14px;font-weight:500">${i.source}</div><div style="font-size:12px;color:var(--tx3)">${i.date||''}</div></div>
+      <div style="font-size:18px;font-weight:700;color:var(--grn)">+${fc(i.amount)}</div>
     </div>`).join('');
 }
-
 async function saveIncome() {
-  const source = $('inc-src').value.trim();
-  const amount = parseFloat($('inc-amt').value)||0;
-  const date   = $('inc-date').value;
-  if (!source||amount<=0) { showToast('Fill source and amount'); return; }
-  await db.collection('users').doc(uid).collection('income').add({source,amount,date});
-  await addXP(5,'Income logged');
-  closeModal('add-income-modal');
-  $('inc-src').value=''; $('inc-amt').value='';
+  const s=$('is').value.trim(),a=parseFloat($('ia').value)||0,d=$('id').value;
+  if(!s||a<=0){toast('Fill source and amount');return;}
+  await db.collection('users').doc(uid).collection('income').add({source:s,amount:a,date:d});
+  await addXP(5,'Income logged'); closeM('m-inc'); $('is').value='';$('ia').value='';
 }
-
 async function saveExpense() {
-  const desc   = $('exp-desc').value.trim();
-  const amount = parseFloat($('exp-amt').value)||0;
-  const date   = $('exp-date').value;
-  if (!desc||amount<=0) { showToast('Fill description and amount'); return; }
-  await db.collection('users').doc(uid).collection('expenses').add({desc,amount,date});
-  closeModal('add-expense-modal');
-  $('exp-desc').value=''; $('exp-amt').value='';
-  showToast('Expense logged');
+  const d=$('ed').value.trim(),a=parseFloat($('ea').value)||0,dt=$('edt').value;
+  if(!d||a<=0){toast('Fill description and amount');return;}
+  await db.collection('users').doc(uid).collection('expenses').add({desc:d,amount:a,date:dt});
+  closeM('m-exp'); $('ed').value='';$('ea').value=''; toast('Expense logged');
 }
 
 // ============================================================
 //  MEASUREMENTS
 // ============================================================
-function loadMeasurements() {
-  db.collection('users').doc(uid).collection('measurements')
-    .onSnapshot(snap => {
-      measurements = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-      updateIdealScore();
-    });
+function loadMeasures() {
+  db.collection('users').doc(uid).collection('measurements').onSnapshot(snap=>{
+    measures=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    updateScore();
+  });
 }
-
-async function saveMeasurements() {
-  const weight = parseFloat($('in-weight').value)||null;
-  const waist  = parseFloat($('in-waist').value)||null;
-  const chest  = parseFloat($('in-chest').value)||null;
-  const arm    = parseFloat($('in-arm').value)||null;
-  if (!weight&&!waist&&!chest&&!arm) { showToast('Enter at least one measurement'); return; }
-  const d = {date:todayKey()};
-  if (weight) d.weight=weight;
-  if (waist)  d.waist=waist;
-  if (chest)  d.chest=chest;
-  if (arm)    d.arm=arm;
+async function saveMeasure() {
+  const w=parseFloat($('in-w').value)||null,wa=parseFloat($('in-wa').value)||null,ch=parseFloat($('in-ch').value)||null,ar=parseFloat($('in-ar').value)||null;
+  if(!w&&!wa&&!ch&&!ar){toast('Enter at least one measurement');return;}
+  const d={date:todayKey()};
+  if(w)d.weight=w; if(wa)d.waist=wa; if(ch)d.chest=ch; if(ar)d.arm=ar;
   await db.collection('users').doc(uid).collection('measurements').doc(todayKey()).set(d,{merge:true});
   await addXP(10,'Measurements logged');
-  if (weight && S_WEIGHT-weight >= 5) unlock('weight_5kg');
-  ['in-weight','in-waist','in-chest','in-arm'].forEach(id=>$(id).value='');
-  showToast('Measurements saved!');
+  if(w&&SW-w>=5)unlock('weight_5kg');
+  ['in-w','in-wa','in-ch','in-ar'].forEach(x=>$(x).value=''); toast('Measurements saved!');
 }
 
 // ============================================================
-//  CODING GOALS
+//  CODING
 // ============================================================
-function loadCodingGoals() {
-  db.collection('users').doc(uid).collection('codingGoals')
-    .onSnapshot(snap => {
-      if (snap.empty) { seedCoding(); return; }
-      codingGoals = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
-      renderCoding();
-    });
-}
-
-async function seedCoding() {
-  const batch = db.batch();
-  CODING_PHASES.forEach((p,i) => {
-    const ref = db.collection('users').doc(uid).collection('codingGoals').doc(p.id);
-    batch.set(ref,{name:p.name,detail:p.detail,done:false,order:i});
+function loadCoding() {
+  db.collection('users').doc(uid).collection('codingGoals').onSnapshot(snap=>{
+    if(snap.empty){seedCoding();return;}
+    codingGoals=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.order-b.order);
+    renderCoding();
   });
-  await batch.commit();
 }
-
+async function seedCoding() {
+  const b=db.batch();
+  CODING_PHASES.forEach((p,i)=>{ const r=db.collection('users').doc(uid).collection('codingGoals').doc(p.id); b.set(r,{name:p.name,detail:p.detail,done:false,order:i}); });
+  await b.commit();
+}
 function renderCoding() {
-  const done = codingGoals.filter(g=>g.done).length;
-  $('code-done').textContent = done;
-  $('code-bar').style.width = Math.round((done/8)*100)+'%';
-  $('coding-list').innerHTML = codingGoals.map((g,i)=>`
+  const done=codingGoals.filter(g=>g.done).length;
+  $('cd-done').textContent=done; $('cd-bar').style.width=Math.round((done/8)*100)+'%';
+  $('cd-list').innerHTML=codingGoals.map((g,i)=>`
     <div class="habit-item" onclick="toggleCode('${g.id}',${g.done})">
-      <div class="habit-check ${g.done?'done':''}"></div>
-      <div style="flex:1">
-        <div class="habit-lbl ${g.done?'done':''}" style="font-size:14px">${i+1}. ${g.name}</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:2px">${g.detail}</div>
-      </div>
-      <span class="habit-xp">+50</span>
+      <div class="h-check ${g.done?'done':''}"></div>
+      <div style="flex:1"><div class="h-lbl ${g.done?'done':''}" style="font-size:14px">${i+1}. ${g.name}</div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:2px">${g.detail}</div></div>
+      <span class="h-xp">+50</span>
     </div>`).join('');
-  updateIdealScore();
+  updateScore();
 }
-
-async function toggleCode(id, was) {
+async function toggleCode(id,was) {
   await db.collection('users').doc(uid).collection('codingGoals').doc(id).update({done:!was});
-  if (!was) await addXP(50,'Coding phase complete!');
+  if(!was) await addXP(50,'Coding phase complete!');
 }
 
 // ============================================================
-//  SELFIES
+//  SELFIES / VISION
 // ============================================================
 function loadSelfies() {
-  db.collection('users').doc(uid).collection('selfies')
-    .onSnapshot(snap => {
-      selfies = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-      renderSelfies();
-      if (selfies.length>=7) unlock('selfie_7');
-    });
+  db.collection('users').doc(uid).collection('selfies').onSnapshot(snap=>{
+    selfies=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    renderSelfies(); if(selfies.length>=7)unlock('selfie_7');
+  });
 }
-
 function renderSelfies() {
-  const thumbs = selfies.slice(0,11).map(s=>`
-    <div class="selfie-thumb"><img src="${s.url}" alt="${s.date}" loading="lazy"></div>`).join('');
-  $('selfie-grid').innerHTML = `
-    <div class="selfie-add" onclick="document.getElementById('selfie-input').click()">
-      <span style="font-size:30px">📸</span><span>Add today</span>
-    </div>${thumbs}`;
+  const thumbs=selfies.slice(0,11).map(s=>`<div class="selfie-thumb"><img src="${s.url}" alt="${s.date}" loading="lazy"></div>`).join('');
+  $('selfie-grid').innerHTML=`<div class="selfie-add" onclick="document.getElementById('selfie-in').click()"><span style="font-size:30px">📸</span><span>Add today</span></div>${thumbs}`;
 }
-
 async function uploadSelfie(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (!storage) { showToast('Enable Firebase Storage first'); return; }
-  showToast('Uploading photo…');
+  const file=input.files[0]; if(!file)return;
+  if(!storage){toast('Enable Firebase Storage first');return;}
+  toast('Uploading photo…');
   try {
-    const ref = storage.ref(`users/${uid}/selfies/${todayKey()}.jpg`);
-    await ref.put(file);
-    const url = await ref.getDownloadURL();
+    const ref=storage.ref(`users/${uid}/selfies/${todayKey()}.jpg`);
+    await ref.put(file); const url=await ref.getDownloadURL();
     await db.collection('users').doc(uid).collection('selfies').doc(todayKey()).set({url,date:todayKey(),ts:new Date().toISOString()});
     await addXP(15,'Daily selfie logged');
-  } catch(e) { showToast('Upload failed — enable Firebase Storage'); }
+  } catch(e){toast('Upload failed — enable Firebase Storage');}
   input.value='';
 }
-
-// ============================================================
-//  VISION BOARD
-// ============================================================
-function loadVisionImgs() {
-  db.collection('users').doc(uid).collection('vision')
-    .onSnapshot(snap => {
-      visionImgs = snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderVision();
-    });
+function loadVision() {
+  db.collection('users').doc(uid).collection('vision').onSnapshot(snap=>{
+    visionImgs=snap.docs.map(d=>({id:d.id,...d.data()})); renderVision();
+  });
 }
-
 function renderVision() {
-  const cards = visionImgs.map(v=>`
-    <div class="vision-card"><img src="${v.url}" alt="vision"></div>`).join('');
-  $('vision-grid').innerHTML = cards + `
-    <div class="vision-card vision-add" onclick="document.getElementById('vision-input').click()" style="display:flex">
-      <span style="font-size:30px">+</span>
-      <span style="font-size:13px;color:var(--text3)">Add image</span>
-    </div>`;
+  const cards=visionImgs.map(v=>`<div class="vision-card"><img src="${v.url}" alt="vision"></div>`).join('');
+  $('vision-grid').innerHTML=cards+`<div class="vision-card vision-add" onclick="document.getElementById('vision-in').click()" style="display:flex"><span style="font-size:30px">+</span><span style="font-size:13px;color:var(--tx3)">Add image</span></div>`;
 }
-
-async function addVisionImg(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (!storage) { showToast('Enable Firebase Storage first'); return; }
-  showToast('Uploading…');
+async function addVision(input) {
+  const file=input.files[0]; if(!file)return;
+  if(!storage){toast('Enable Firebase Storage first');return;}
+  toast('Uploading…');
   try {
-    const id  = Date.now().toString();
-    const ref = storage.ref(`users/${uid}/vision/${id}.jpg`);
-    await ref.put(file);
-    const url = await ref.getDownloadURL();
+    const id=Date.now().toString(), ref=storage.ref(`users/${uid}/vision/${id}.jpg`);
+    await ref.put(file); const url=await ref.getDownloadURL();
     await db.collection('users').doc(uid).collection('vision').doc(id).set({url,date:todayKey()});
-    showToast('Added to vision board!');
-  } catch(e) { showToast('Upload failed — enable Firebase Storage'); }
+    toast('Added to vision board!');
+  } catch(e){toast('Upload failed — enable Firebase Storage');}
   input.value='';
 }
 
@@ -1296,52 +1226,33 @@ async function addVisionImg(input) {
 //  ACHIEVEMENTS
 // ============================================================
 async function unlock(id) {
-  if ((udata.achievements||[]).includes(id)) return;
-  udata.achievements = [...(udata.achievements||[]),id];
-  await saveUD();
-  const a = ACHIEVEMENTS.find(x=>x.id===id);
-  if (a) showToast('🏆 Achievement: ' + a.name + '!');
+  if((udata.achievements||[]).includes(id))return;
+  udata.achievements=[...(udata.achievements||[]),id]; await saveUD();
+  const a=ACHIEVEMENTS.find(x=>x.id===id); if(a)toast('🏆 Achievement: '+a.name+'!');
   renderAch();
 }
-
 function renderAch() {
-  const ul = udata.achievements||[];
-  const makeAch = a => `
-    <div class="ach ${ul.includes(a.id)?'unlocked':''}">
-      <div class="ach-icon">${a.icon}</div>
-      <div class="ach-name">${a.name}</div>
-    </div>`;
-  $('ach-preview').innerHTML = ACHIEVEMENTS.slice(0,6).map(makeAch).join('');
-  $('all-ach').innerHTML     = ACHIEVEMENTS.map(makeAch).join('');
+  const ul=udata.achievements||[];
+  const mk=a=>`<div class="ach ${ul.includes(a.id)?'unlocked':''}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`;
+  $('ach-prev').innerHTML=ACHIEVEMENTS.slice(0,6).map(mk).join('');
+  $('all-ach').innerHTML=ACHIEVEMENTS.map(mk).join('');
 }
 
 // ============================================================
-//  NAV / MODALS / TOAST / UTILS
+//  UI HELPERS
 // ============================================================
-function switchTab(name) {
+function switchTab(n) {
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  $('tab-'+name).classList.add('active');
-  $('nav-'+name).classList.add('active');
-  $('content-area').scrollTop=0;
+  $('tab-'+n).classList.add('active'); $('nav-'+n).classList.add('active');
+  $('ca').scrollTop=0;
 }
-
-function openModal(id) { $(id).classList.add('open'); }
-function closeModal(id) { $(id).classList.remove('open'); }
-document.querySelectorAll('.modal-backdrop').forEach(m=>{
-  m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); });
-});
-
-let tTimer;
-function showToast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(tTimer);
-  tTimer = setTimeout(()=>t.classList.remove('show'), 2800);
-}
-
-window.addEventListener('beforeinstallprompt', e=>e.preventDefault());
+function openM(id){$(id).classList.add('open');}
+function closeM(id){$(id).classList.remove('open');}
+document.querySelectorAll('.modal-bd').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+let tT;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2800);}
+window.addEventListener('beforeinstallprompt',e=>e.preventDefault());
 </script>
 </body>
 </html>
