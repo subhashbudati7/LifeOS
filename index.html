@@ -838,12 +838,26 @@ Output a practical updated time-block schedule for tomorrow or the specified day
 // ============================================================
 function signIn() {
   const p = new firebase.auth.GoogleAuthProvider();
-  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    auth.signInWithRedirect(p);
-  } else {
-    auth.signInWithPopup(p).catch(e => alert('Sign-in failed: ' + e.message));
-  }
+  auth.signInWithPopup(p).catch(err => {
+    // Popup blocked (older iOS) — fall back to redirect
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+      auth.signInWithRedirect(p);
+    } else {
+      alert('Sign-in failed: ' + err.message);
+    }
+  });
 }
+
+// Handle redirect result (catches the redirect flow on older iOS)
+auth.getRedirectResult().then(result => {
+  if (result && result.user) {
+    // onAuthStateChanged will fire and handle the rest
+  }
+}).catch(err => {
+  if (err.code !== 'auth/no-auth-event') {
+    alert('Sign-in failed: ' + err.message);
+  }
+});
 
 auth.onAuthStateChanged(user => {
   if (user) { uid = user.uid; $('login-screen').style.display='none'; $('app').classList.add('active'); init(); }
