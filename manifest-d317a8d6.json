@@ -1,0 +1,19 @@
+{
+  "name": "LifeOS",
+  "short_name": "LifeOS",
+  "description": "Your personal operating system — level up every day",
+  "start_url": "/LifeOS/",
+  "scope": "/LifeOS/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
