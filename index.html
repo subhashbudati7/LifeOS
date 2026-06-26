@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ARISE">
 <link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -28,7 +29,7 @@
   --glow-gld:0 0 24px rgba(245,158,11,.35);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;height:100%;overflow:hidden}
+html,body{background:var(--bg);color:var(--tx);font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',system-ui,sans-serif;height:100%;overflow:hidden}
 
 /* ── LOGIN ── */
 #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;padding:2rem;background:radial-gradient(ellipse at 50% 0%,rgba(65,105,255,.15) 0%,transparent 70%)}
@@ -51,7 +52,8 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 #app.active{display:flex}
 .content-area{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav) + 1rem);-webkit-overflow-scrolling:touch}
 .tab{display:none;padding:0 1rem}
-.tab.active{display:block}
+.tab.active{display:block;animation:tabFadeIn .18s ease forwards}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 ::-webkit-scrollbar{width:0}
 
 /* ── BOTTOM NAV ── */
@@ -59,7 +61,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:6px 4px;color:var(--tx3);transition:color .2s}
 .nav-btn.active{color:var(--sys)}
 .nav-icon{font-size:22px;line-height:1}
-.nav-label{font-size:10px;font-weight:600;letter-spacing:.06em}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.06em;font-family:'Orbitron',sans-serif}
 
 /* ── CARDS ── */
 .card{background:var(--bg2);border:.5px solid var(--bd);border-radius:18px;padding:1rem 1.125rem;margin-bottom:12px}
@@ -67,10 +69,10 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .card-ttl{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em}
 .page-hdr{padding:1rem 1rem .5rem;display:flex;align-items:center;justify-content:space-between}
-.page-ttl{font-size:26px;font-weight:800;letter-spacing:.04em}
+.page-ttl{font-size:22px;font-weight:800;letter-spacing:.04em;font-family:'Orbitron',sans-serif}
 
 /* ── RANK BADGE ── */
-.rank-badge{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:800;letter-spacing:.06em;border:.5px solid}
+.rank-badge{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:4px 10px;font-size:13px;font-weight:800;letter-spacing:.06em;border:.5px solid;font-family:'Orbitron',sans-serif}
 .rank-E{background:rgba(107,114,128,.15);color:#9ca3af;border-color:#6b728040}
 .rank-D{background:rgba(34,197,94,.12);color:#22c55e;border-color:#22c55e40}
 .rank-C{background:rgba(59,130,246,.12);color:#3b82f6;border-color:#3b82f640}
@@ -79,16 +81,17 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .rank-S{background:rgba(239,68,68,.12);color:#ef4444;border-color:#ef444440;box-shadow:0 0 12px rgba(239,68,68,.3)}
 
 /* ── HUNTER PROFILE CARD ── */
-.hunter-card{background:linear-gradient(135deg,#08081c 0%,#0d0d28 100%);border:.5px solid rgba(65,105,255,.4);border-radius:20px;padding:1.25rem;margin-bottom:12px;box-shadow:var(--glow-sys)}
-.hunter-name{font-size:24px;font-weight:900;letter-spacing:.08em;margin-bottom:2px}
+@keyframes hunterPulse{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hunter-card{background:linear-gradient(-45deg,#06061a,#0d0d28,#0a0820,#06061e);background-size:400% 400%;animation:hunterPulse 8s ease infinite;border:.5px solid rgba(65,105,255,.4);border-radius:20px;padding:1.25rem;margin-bottom:12px;box-shadow:var(--glow-sys)}
+.hunter-name{font-size:24px;font-weight:900;letter-spacing:.08em;margin-bottom:2px;font-family:'Orbitron',sans-serif}
 .hunter-title{font-size:12px;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem}
 .power-row{display:flex;align-items:baseline;gap:8px;margin-bottom:.75rem}
-.power-num{font-size:40px;font-weight:900;color:var(--sys);line-height:1;font-variant-numeric:tabular-nums}
-.power-lbl{font-size:11px;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase}
+.power-num{font-size:40px;font-weight:900;color:var(--sys);line-height:1;font-variant-numeric:tabular-nums;font-family:'Orbitron',sans-serif;text-shadow:0 0 20px rgba(65,105,255,.5)}
+.power-lbl{font-size:11px;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;font-family:'Orbitron',sans-serif}
 .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .stat-card{background:var(--bg2);border:.5px solid var(--bd);border-radius:14px;padding:10px;text-align:center}
-.stat-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
-.stat-lbl{font-size:10px;color:var(--tx2);margin-top:2px;letter-spacing:.04em}
+.stat-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;font-family:'Orbitron',sans-serif}
+.stat-lbl{font-size:10px;color:var(--tx2);margin-top:2px;letter-spacing:.04em;font-family:'Orbitron',sans-serif}
 
 /* ── XP BAR ── */
 .xp-wrap{margin-bottom:6px}
@@ -106,7 +109,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .rpg-stat{background:var(--bg3);border:.5px solid var(--bd2);border-radius:12px;padding:10px 12px}
 .rpg-stat-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .rpg-stat-name{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--tx3)}
-.rpg-stat-val{font-size:15px;font-weight:800;color:var(--sys)}
+.rpg-stat-val{font-size:15px;font-weight:800;color:var(--sys);font-family:'Orbitron',sans-serif}
 
 /* ── SHADOW ARMY (habits) ── */
 .shadow-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:.5px solid var(--bd);cursor:pointer;transition:opacity .2s}
@@ -128,6 +131,12 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 .gate-mental{background:rgba(65,105,255,.06);border-color:rgba(65,105,255,.25)}
 .gate-social{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.25)}
 .gate-cleared{opacity:.5;filter:grayscale(.5)}
+@keyframes gateFlash{0%{box-shadow:none}40%{box-shadow:0 0 32px rgba(65,105,255,.8),inset 0 0 20px rgba(65,105,255,.25)}100%{box-shadow:none}}
+.gate-flash{animation:gateFlash .7s ease forwards}
+/* ── CODE CALENDAR ── */
+.code-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.cal-day{aspect-ratio:1;border-radius:3px;transition:transform .1s}
+.cal-day:hover{transform:scale(1.3)}
 .gate-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .gate-category{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .gate-category.physical{color:var(--gld)}
@@ -251,8 +260,8 @@ html,body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMa
 @keyframes ariseIn{from{opacity:0}to{opacity:1}}
 .arise-lightning{font-size:80px;margin-bottom:1rem;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5) drop-shadow(0 0 20px #4169ff)}}
-.arise-rank{font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--sys);margin-bottom:.5rem}
-.arise-title{font-size:48px;font-weight:900;color:#fff;letter-spacing:.08em;margin-bottom:.5rem}
+.arise-rank{font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--sys);margin-bottom:.5rem;font-family:'Orbitron',sans-serif}
+.arise-title{font-size:48px;font-weight:900;color:#fff;letter-spacing:.08em;margin-bottom:.5rem;font-family:'Orbitron',sans-serif;text-shadow:0 0 40px rgba(65,105,255,.7)}
 .arise-sub{font-size:16px;color:var(--tx2);margin-bottom:2rem}
 .arise-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .particle{position:absolute;width:2px;height:2px;background:var(--sys);border-radius:50%;animation:fly 2s infinite}
@@ -345,6 +354,16 @@ input[type="range"]{width:100%;accent-color:var(--sys);height:4px;cursor:pointer
       <div class="card">
         <div class="card-hdr"><span class="card-ttl">Shadow Army</span><span style="font-size:13px;color:var(--tx2)"><span id="hb-done">0</span>/6 awakened</span></div>
         <div id="shadow-list"></div>
+      </div>
+
+      <!-- Code Log Calendar -->
+      <div class="sys-card">
+        <div class="card-hdr"><span class="card-ttl">💻 Code From Blank File</span><span id="code-streak-lbl" style="font-size:13px;font-weight:700;color:var(--grn);font-family:'Orbitron',sans-serif">0 days</span></div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:8px">Awaken ORIGIN shadow each day you code from scratch → Y</div>
+        <div class="code-cal" id="code-calendar"></div>
+        <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--tx3)">
+          <span>▪ missed</span><span style="color:var(--grn)">▪ coded</span>
+        </div>
       </div>
 
       <!-- Mood -->
@@ -598,7 +617,7 @@ const SHADOWS=[
   {id:'workout',shadow:'IRON',title:'Shadow of Iron',power:'Physical Dominance',icon:'⚔️',xp:20},
   {id:'water',shadow:'FLOW',title:'Shadow of Flow',power:'Vital Force',icon:'💧',xp:10},
   {id:'meals',shadow:'NOURISH',title:'Shadow of Sustenance',power:'Energy Control',icon:'🍚',xp:15},
-  {id:'coding',shadow:'MIND',title:'Shadow of Intellect',power:'Mental Sharpness',icon:'🧠',xp:20},
+  {id:'coding',shadow:'ORIGIN',title:'Shadow of Origin',power:'Code from blank file — THE RULE',icon:'💻',xp:30},
   {id:'sleep',shadow:'VEIL',title:'Shadow of Veil',power:'Recovery Protocol',icon:'🌙',xp:10},
   {id:'steps',shadow:'SWIFT',title:'Shadow of Agility',power:'Movement Mastery',icon:'⚡',xp:15},
 ];
@@ -654,44 +673,50 @@ const ACHIEVEMENTS=[
 ];
 
 const CODING_PHASES=[
-  {id:'p1',name:'HTML & CSS basics',detail:'freeCodeCamp — Responsive Web Design'},
-  {id:'p2',name:'JavaScript fundamentals',detail:'freeCodeCamp — JS Algorithms & DS'},
-  {id:'p3',name:'Build 3 projects',detail:'To-do app, calculator, weather app'},
-  {id:'p4',name:'React basics',detail:'Scrimba React course (free)'},
-  {id:'p5',name:'Node.js & APIs',detail:'The Odin Project — Backend'},
-  {id:'p6',name:'Databases (SQL)',detail:'SQLBolt + CS50 SQL week'},
-  {id:'p7',name:'Job prep & LeetCode',detail:'Blind 75 + resume writing'},
-  {id:'p8',name:'Apply to 50 jobs',detail:'Entry-level SWE roles in Bay Area'},
+  {id:'p1',name:'Python from blank file',detail:'Write two-sum, reverse a string, FizzBuzz — cold, no searching'},
+  {id:'p2',name:'CS fundamentals — coded',detail:'Arrays, linked lists, trees, hash maps — implement each from scratch'},
+  {id:'p3',name:'ML fundamentals — coded',detail:'Bias-variance, loss functions, gradient descent — implemented, not just read'},
+  {id:'p4',name:'Linear algebra in Python',detail:'Vectors, matrices, eigenvalues — NumPy implementations from scratch'},
+  {id:'p5',name:'Probability & stats in Python',detail:'Distributions, Bayes, MLE — coded and visualized'},
+  {id:'p6',name:'Ship first AI-API project',detail:'One working project on GitHub with clean README — no tutorial clones'},
+  {id:'p7',name:'Deep learning from scratch',detail:'Implement backprop, train a small net without PyTorch — know what the lib does'},
+  {id:'p8',name:'Research depth + internship',detail:'One shipped project/semester — apply to Microsoft, Google, Apple, Scale AI'},
 ];
 
 const DEFAULT_SCHED=[
-  {id:'s1',time:'06:30',name:'Wake up & morning routine',type:'study'},
-  {id:'s2',time:'07:00',name:'Breakfast (oats + eggs)',type:'meal'},
-  {id:'s3',time:'07:30',name:'Study / Coding (1hr)',type:'study'},
-  {id:'s4',time:'09:00',name:'Commute to college (EV bike)',type:'commute'},
-  {id:'s5',time:'10:00',name:'Morning class starts',type:'class'},
-  {id:'s6',time:'13:00',name:'Lunch break',type:'meal'},
-  {id:'s7',time:'14:30',name:'Morning class ends',type:'class'},
-  {id:'s8',time:'15:00',name:'Gym / Home workout (45 min)',type:'workout'},
-  {id:'s9',time:'16:00',name:'Cook & eat early dinner',type:'meal'},
-  {id:'s10',time:'17:15',name:'Commute to evening class',type:'commute'},
-  {id:'s11',time:'17:30',name:'Evening class starts',type:'class'},
-  {id:'s12',time:'22:00',name:'Evening class ends',type:'class'},
-  {id:'s13',time:'22:30',name:'Home — buttermilk or curd',type:'meal'},
-  {id:'s14',time:'23:00',name:'Wind down + sleep prep',type:'study'},
+  {id:'s1',time:'06:30',name:'Wake up — no snooze, no phone',type:'study'},
+  {id:'s2',time:'06:45',name:'Breakfast (~600 kcal)',type:'meal'},
+  {id:'s3',time:'07:00',name:'⚔️ CODE FROM BLANK FILE (1hr) — THE RULE',type:'study'},
+  {id:'s4',time:'08:00',name:'CS / ML fundamentals (active problem-solving)',type:'study'},
+  {id:'s5',time:'09:00',name:'Shower + pack gym bag + pack campus lunch',type:'study'},
+  {id:'s6',time:'09:30',name:'Commute to campus (EV bike)',type:'commute'},
+  {id:'s7',time:'10:00',name:'PhD class (10am – 2:45pm)',type:'class'},
+  {id:'s8',time:'13:00',name:'Campus lunch (packed from home)',type:'meal'},
+  {id:'s9',time:'14:45',name:'Class ends → walk directly to campus gym',type:'workout'},
+  {id:'s10',time:'14:50',name:'Gym — 45 min (never go home first)',type:'workout'},
+  {id:'s11',time:'15:35',name:'Shower at campus gym',type:'study'},
+  {id:'s12',time:'16:00',name:'Commute home (EV bike)',type:'commute'},
+  {id:'s13',time:'16:20',name:'Saffola oats + repack bag for evening',type:'meal'},
+  {id:'s14',time:'17:00',name:'Leave for evening class',type:'commute'},
+  {id:'s15',time:'17:30',name:'PhD evening class (5:30 – 9:45pm)',type:'class'},
+  {id:'s16',time:'22:15',name:'Home',type:'study'},
+  {id:'s17',time:'22:20',name:'Log ARISE — did I code from blank file today? Y/N',type:'study'},
+  {id:'s18',time:'22:30',name:'Light snack — curd or buttermilk',type:'meal'},
+  {id:'s19',time:'23:00',name:'Wind down — no screens',type:'study'},
+  {id:'s20',time:'23:30',name:'In bed — lights out',type:'study'},
 ];
 
 const QUOTES=[
-  "The man who moves a mountain begins by carrying away small stones.",
-  "You are not your past. You are what you choose to become.",
-  "Every dollar saved is a vote for the life you want.",
-  "130kg to jacked starts with today's workout.",
-  "Broke at 28 is temporary. Disciplined at 28 is a superpower.",
-  "The debt doesn't care about your feelings. Pay it anyway.",
-  "Small daily improvements lead to stunning long-term results.",
-  "Show up when you don't feel like it. That's where legends are made.",
   "I alone level up.",
   "Arise.",
+  "Did you write code from a blank file today? Yes or no.",
+  "Every day you code from scratch, you compound. Every day you don't, you decay.",
+  "Broke at 28 is temporary. Disciplined at 28 is a superpower.",
+  "The credential is not the skill. Build the skill.",
+  "Your 7am defines you more than your past does.",
+  "Show up when you don't feel like it. That's where legends are made.",
+  "The man who moves a mountain begins by carrying away small stones.",
+  "Don't say I don't know. Reason out loud. That's the skill.",
 ];
 
 const SW=130,GW=85;
@@ -726,18 +751,36 @@ function buildProfile(){
 }
 function coachSystem(){
   const p=buildProfile();
-  return `You are the ARISE System AI — Subhash's strict but caring advisor, styled like the Solo Leveling system.\n- 28yo (DOB Aug 27 1998), Sunnyvale CA student\n- Classes Mon-Fri 10AM-2:30PM and 5:30-10PM, 20-25min EV bike commute\n- Weight: ${p.curW}kg → goal 85kg, 6ft tall\n- Diet: Telangana/South Indian, cooks own meals, 2400 kcal/day fat-loss\n- 6+ debts total $${p.dbtT}, irregular income, wants SWE job in Bay Area\n- Hunter Rank: ${p.rank} · XP: ${p.xp} · Streak: ${p.str} days\n- Balance: ${fc(p.bal)} Debt: ${fc(p.dbtT)} Min Payments: ${fc(p.minP)}/mo\n- Shadows awakened today: ${p.hDone}/6\nBe direct, tough but caring. Occasionally use System-style language. Under 120 words unless asked for detail.`;
+  return `You are the ARISE System AI — Subhash's strict, blunt advisor. Solo Leveling system voice.
+- 28yo, Sunnyvale CA. AI PhD student (just started). CS master's + 3yrs Wipro/Walmart but coasted.
+- Real skill level: 1/10. Cannot write a Python function from a blank file yet.
+- Goal: SWE at Microsoft, Google, Apple, or Scale AI — realistic 3-4 year build during PhD.
+- Key weakness: defaults to "I don't know" instead of reasoning through problems. History of consuming, not building.
+- THE RULE: every day, write working code from a blank file. Y or N. No exceptions.
+- Schedule: Code 7-8am daily. PhD class 10am-2:45pm + 5:30-9:45pm Mon-Fri. Gym directly after morning class — never go home first.
+- Weight: ${p.curW}kg → goal 85kg. 6ft. Diet: Telangana/South Indian, 2400 kcal fat-loss target. Instant oats as backup meal.
+- 6+ debts. Irregular income. Hunter Rank: ${p.rank} · XP: ${p.xp} · Streak: ${p.str} days.
+- Balance: ${fc(p.bal)} · Total Debt: ${fc(p.dbtT)} · Min Payments: ${fc(p.minP)}/mo · Shadows awakened today: ${p.hDone}/6.
+Challenge assumptions. Rate confidence [Certain/Likely/Guessing]. Never let him say IDK — push him to reason. Under 100 words unless asked for detail.`;
 }
 async function sendChat(){
   const input=$('chat-in'),msg=input.value.trim();if(!msg)return;input.value='';
   appendBubble(msg,'user');chatHistory.push({role:'user',content:msg});
   const btn=$('chat-send');btn.disabled=true;const typing=appendTyping();
-  try{const r=await callAI(coachSystem(),chatHistory);typing.remove();appendBubble(r,'ai');chatHistory.push({role:'assistant',content:r});if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);}
+  try{const r=await callAI(coachSystem(),chatHistory);typing.remove();appendBubble(r,'ai',true);chatHistory.push({role:'assistant',content:r});if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);}
   catch(e){typing.remove();appendBubble('[ SYSTEM OFFLINE ] Check Cloudflare Worker.','sys');}
   btn.disabled=false;$('chat-in').focus();
 }
 function sendChip(t){$('chat-in').value=t;sendChat();}
-function appendBubble(text,type){const msgs=$('chat-msgs'),div=document.createElement('div');div.className='chat-bubble bubble-'+type;div.textContent=text;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
+function appendBubble(text,type,typed=false){
+  const msgs=$('chat-msgs'),div=document.createElement('div');
+  div.className='chat-bubble bubble-'+type;
+  if(type==='ai'&&typed){
+    div.textContent='';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+    let i=0;const t=setInterval(()=>{div.textContent+=text[i++];msgs.scrollTop=msgs.scrollHeight;if(i>=text.length)clearInterval(t);},12);
+  }else{div.textContent=text;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+  return div;
+}
 function appendTyping(){const msgs=$('chat-msgs'),div=document.createElement('div');div.className='chat-bubble bubble-ai';div.innerHTML='<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
 
 async function checkAffordability(){
@@ -764,7 +807,7 @@ async function askSchedAI(){
   const req=$('sched-ai-input').value.trim();if(!req){toast('Describe the change');return;}
   const btn=$('sched-ai-btn'),res=$('sched-ai-res');btn.disabled=true;btn.textContent='Processing…';res.style.display='none';
   try{const ss=schedEvts.map(e=>fmtT(e.time)+' — '+e.name).join('\n');
-  const sys=`Schedule optimizer for Subhash.\nFIXED: Classes Mon-Fri 10AM-2:30PM and 5:30-10PM. Commute 25min each way.\nGoals: workout 45min, code 1hr, cook 2 meals, sleep 8hrs.\nCurrent:\n${ss}\nOutput updated time-blocks. Format: TIME — activity. 150 words max.`;
+  const sys=`Schedule optimizer for Subhash (AI PhD student).\nFIXED: PhD classes Mon-Fri 10am-2:45pm and 5:30-9:45pm. EV bike commute 30min each way.\nRULE: Code from blank file 7-8am daily — non-negotiable. Gym directly after morning class (campus gym, never go home first). Instant Saffola oats as fallback meal at 4:20pm.\nGoals: code 1hr/day, gym 45min, sleep 7.5hrs (in bed by 11:30pm).\nCurrent:\n${ss}\nOutput updated time-blocks. Format: TIME — activity. 150 words max.`;
   const r=await callAI(sys,[{role:'user',content:req}]);res.style.display='block';res.textContent=r;}
   catch(e){res.style.display='block';res.textContent='[ SYSTEM ] AI unavailable.';}
   btn.disabled=false;btn.textContent='Rework Schedule →';
@@ -809,7 +852,7 @@ function setupGreeting(){
 }
 
 // ── USER DATA ──
-function loadUD(){db.collection('users').doc(uid).collection('settings').doc('main').onSnapshot(snap=>{udata=snap.exists?snap.data():{xp:0,streak:0,lastActiveDate:'',achievements:['first_login'],level:1};if(!snap.exists)saveUD();checkStreak();renderXP();renderAch();});}
+function loadUD(){db.collection('users').doc(uid).collection('settings').doc('main').onSnapshot(snap=>{udata=snap.exists?snap.data():{xp:0,streak:0,lastActiveDate:'',achievements:['first_login'],level:1};if(!snap.exists)saveUD();checkStreak();renderXP();renderAch();renderCalendar();});}
 const saveUD=()=>db.collection('users').doc(uid).collection('settings').doc('main').set(udata,{merge:true});
 
 async function addXP(amount,reason){
@@ -849,12 +892,13 @@ function checkStreak(){
 function loadHabits(){db.collection('users').doc(uid).collection('habits').doc(todayKey()).onSnapshot(snap=>{habits=snap.exists?(snap.data().done||{}):{};renderShadows();});}
 function renderShadows(){
   const done=SHADOWS.filter(s=>habits[s.id]).length;$('hb-done').textContent=done;
+  const totals=udata.shadowTotal||{};
   $('shadow-list').innerHTML=SHADOWS.map(s=>{
-    const awk=habits[s.id];
+    const awk=habits[s.id],lv=Math.floor((totals[s.id]||0)/5);
     return`<div class="shadow-item ${awk?'awakened':''}" onclick="toggleShadow('${s.id}',${s.xp})">
       <div class="shadow-icon">${s.icon}</div>
       <div style="flex:1;min-width:0">
-        <div class="shadow-name">${s.shadow}</div>
+        <div class="shadow-name" style="display:flex;align-items:center;gap:6px">${s.shadow}${lv>0?`<span style="font-size:10px;font-family:'Orbitron',sans-serif;color:var(--sys);opacity:.7">Lv.${lv}</span>`:''}</div>
         <div class="shadow-title ${awk?'done':''}">${s.power}</div>
       </div>
       <span class="shadow-xp">+${s.xp}</span>
@@ -868,8 +912,16 @@ function renderShadows(){
 async function toggleShadow(id,xp){
   const was=habits[id];habits[id]=!was;
   await db.collection('users').doc(uid).collection('habits').doc(todayKey()).set({done:habits},{merge:true});
-  if(!was){const s=SHADOWS.find(h=>h.id===id);await addXP(xp,s.shadow+' awakened');}
+  if(!was){
+    const s=SHADOWS.find(h=>h.id===id);
+    await addXP(xp,s.shadow+' awakened');
+    if(!udata.shadowTotal)udata.shadowTotal={};
+    udata.shadowTotal[id]=(udata.shadowTotal[id]||0)+1;
+    if(id==='coding'){if(!udata.codeDays)udata.codeDays={};udata.codeDays[todayKey()]=true;}
+    await saveUD();
+  }
   renderShadows();
+  renderCalendar();
 }
 
 // ── DAILY GATES ──
@@ -894,7 +946,7 @@ function renderGates(){
   $('gate-list').innerHTML=gates.map(g=>{
     const cleared=gateCompletions.includes(g.id);
     const rankClass=g.rank==='E'?'rank-E':g.rank==='D'?'rank-D':g.rank==='C'?'rank-C':g.rank==='B'?'rank-B':g.rank==='A'?'rank-A':'rank-S';
-    return`<div class="gate-card gate-${g.category} ${cleared?'gate-cleared':''}">
+    return`<div class="gate-card gate-${g.category} ${cleared?'gate-cleared':''}" data-gate-id="${g.id}">
       <div class="gate-hdr">
         <span class="rank-badge ${rankClass}" style="font-size:10px;padding:3px 8px">${g.rank}</span>
         <span class="gate-category ${g.category}">${g.category.toUpperCase()} GATE</span>
@@ -916,6 +968,8 @@ function renderGates(){
 }
 async function enterGate(gateId,xp){
   if(gateCompletions.includes(gateId))return;
+  const el=document.querySelector('[data-gate-id="'+gateId+'"]');
+  if(el){el.classList.add('gate-flash');setTimeout(()=>el.classList.remove('gate-flash'),700);}
   gateCompletions=[...gateCompletions,gateId];
   await db.collection('users').doc(uid).collection('gates').doc(todayKey()).set({completions:gateCompletions},{merge:true});
   await addXP(xp,'Gate cleared');
@@ -923,6 +977,36 @@ async function enterGate(gateId,xp){
   if(allCleared){await addXP(100,'DUNGEON CLEAR bonus');unlock('dungeon_clear');}
   renderGates();
 }
+
+// ── CODE CALENDAR ──
+function renderCalendar(){
+  const cal=$('code-calendar');if(!cal)return;
+  const codeDays=udata.codeDays||{};
+  const today=new Date();today.setHours(0,0,0,0);
+  let streak=0,checking=new Date(today);
+  while(codeDays[checking.toISOString().slice(0,10)]){streak++;checking.setDate(checking.getDate()-1);}
+  const lbl=$('code-streak-lbl');if(lbl)lbl.textContent=streak+' day'+(streak!==1?'s':'');
+  const days=[];
+  for(let i=34;i>=0;i--){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().slice(0,10);
+    days.push({key,coded:!!codeDays[key],isToday:i===0});
+  }
+  cal.innerHTML=days.map(d=>{
+    const bg=d.coded?'var(--grn)':'var(--bg3)';
+    const border=d.isToday?'1px solid var(--sys)':'.5px solid var(--bd)';
+    return`<div class="cal-day" style="background:${bg};border:${border};border-radius:3px" title="${d.key}${d.coded?' ✓ coded':''}"></div>`;
+  }).join('');
+}
+
+// ── GATE COUNTDOWN TIMER ──
+function updateGateTimer(){
+  const el=$('gate-timer');if(!el)return;
+  const now=new Date(),mn=new Date();mn.setHours(24,0,0,0);
+  const diff=mn-now,h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+' left';
+}
+setInterval(updateGateTimer,1000);updateGateTimer();
 
 // ── STATS / COMBAT POWER ──
 function updateStats(){
